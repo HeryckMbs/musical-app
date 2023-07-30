@@ -6,6 +6,7 @@ import 'package:new_pib_app/models/User.dart';
 import 'package:new_pib_app/models/igreja.dart';
 import 'package:new_pib_app/views/church/CreateChurch.dart';
 import 'package:new_pib_app/views/department/CreateDepartment.dart';
+import 'package:new_pib_app/views/department/DepartmentDetail.dart';
 import 'package:new_pib_app/views/external.dart';
 import 'package:new_pib_app/views/login.dart';
 import 'package:new_pib_app/views/utils/utils.dart';
@@ -93,13 +94,12 @@ class _DepartmentListState extends State<DepartmentList> {
                   itemBuilder: (context, index) {
                     return InkWell(
                         onTap: () async {
-                          var membros = ChurchController.getMembers(
-                              getIt<UserCustom>().igreja_selecionada!);
-                          // await Navigator.push(
-                          //     context,
-                          //     PageTransition(
-                          //         child: Home(),
-                          //         type: PageTransitionType.fade));
+                          Departamento departamento = await DepartmentController.getDepartment(departamentos[index].id!);
+                          await Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: DepartmentDetail(departamento: departamento,),
+                                  type: PageTransitionType.fade));
                         },
                         child: WideCard(
                           title: departamentos[index].nome!,

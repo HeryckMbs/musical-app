@@ -106,45 +106,7 @@ class _CreateDepartmentState extends State<CreateDepartment> {
                           password: false),
                            DropdownButtonFormField(
                         enableFeedback: true,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(
-                              top: 30, left: 30, right: 30),
-                          helperStyle: TextStyle(color: Colors.grey),
-                          alignLabelWithHint: true,
-                          errorStyle: TextStyle(fontWeight: FontWeight.bold),
-                          focusedErrorBorder: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          floatingLabelAlignment: FloatingLabelAlignment.start,
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          errorBorder: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          labelText: 'Selecione o líder',
-                          floatingLabelStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          labelStyle: TextStyle(color: Colors.white60),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              borderSide: BorderSide(
-                                style: BorderStyle.solid,
-                                width: 3,
-                                color: ColorsWhiteTheme.cardColor,
-                              )),
-                          filled: true,
-                          fillColor: ColorsWhiteTheme.cardColor2,
-                        ),
+                        decoration: DecorationVariables.decorationInput('Selecione o lider'),
                         dropdownColor: ColorsWhiteTheme.cardColor2,
                         value: lider_selecionado,
                         padding: EdgeInsets.all(8),
@@ -190,11 +152,11 @@ class _CreateDepartmentState extends State<CreateDepartment> {
                       ),
                      
                       CheckboxListTile(
+                        title: Text("É ministério de louvor?",style: TextStyle(color: Colors.grey),),
                         activeColor: ColorsWhiteTheme.cardColor,
                         checkColor: Colors.black,
                         subtitle: Text('Clique aqui!',style:TextStyle(color: Colors.grey)),
-                        title: Text("É ministério de louvor?",style: TextStyle(color: Colors.grey),),
-                      fillColor: MaterialStateProperty.all(ColorsWhiteTheme.cardColor),
+                        fillColor: MaterialStateProperty.all(ColorsWhiteTheme.cardColor),
                         value: isLouvor,
                         onChanged: (newValue) {
                           setState(() {

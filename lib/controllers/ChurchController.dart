@@ -67,7 +67,8 @@ class ChurchController {
       print(e);
     }
     return membros;
-  }
+  }  
+
 
   static Future<Map<String, dynamic>> createChurch(
       String nome, String telefone) async {

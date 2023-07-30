@@ -28,7 +28,7 @@ class Network {
           "password": password,
           "scope": ""
         }),
-        headers: _setHeaders());
+        headers: setHeaders());
     var responseToken = jsonDecode(response.body);
     if (responseToken['error'] == null) {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -56,7 +56,7 @@ class Network {
           "client_secret": dotenv.env['client_secret'],
           "scope": ""
         }),
-        headers: _setHeaders());
+        headers: setHeaders());
     var responseToken = jsonDecode(response.body);
     if (responseToken['error'] == null) {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -70,7 +70,7 @@ class Network {
     return false;
   }
 
-  _setHeaders() => {
+  Map<String,String> setHeaders() => {
         'Content-type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token'
