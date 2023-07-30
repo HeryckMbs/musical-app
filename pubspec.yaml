@@ -46,7 +46,8 @@ dependencies:
   pdfx:
   intl:
   page_transition:
-  reorderable_grid_view: 
+  reorderable_grid_view:
+  flutter_dotenv: 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -94,6 +95,7 @@ flutter:
     - assets/biblia/aa.json
     - assets/biblia/nvi.json
     - assets/biblia/acf.json
+    - assets/.env
 
     - fonts/
 

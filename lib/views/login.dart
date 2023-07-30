@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:new_pib_app/controllers/UserController.dart';
 import 'package:new_pib_app/network/network.dart';
 import 'package:new_pib_app/views/cadastro.dart';
+import 'package:new_pib_app/views/external.dart';
 import 'package:new_pib_app/views/homePage/home.dart';
 import 'package:new_pib_app/views/utils/utils.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../controllers/ChurchController.dart';
+import '../models/igreja.dart';
+import 'church/ListChurch.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -117,23 +121,26 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 Container(
-
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        child: const Text(
-                          'Ainda não possuí conta? cadastre-se por aqui',
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => Cadastro(),
-                        )),
-                      ),
+                            child: const Text(
+                              'Ainda não possuí conta? cadastre-se por aqui',
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            onTap: () async {
+                              List<Igreja> igrejas =
+                                  await ChurchController.getChurchs();
+                              Navigator.push(
+                                  context,
+                                  PageTransition(
+                                      child: Cadastro(igrejas: igrejas),
+                                      type: PageTransitionType.fade));
+                            })
                     ],
                   ),
                 ),
@@ -145,23 +152,25 @@ class _LoginState extends State<Login> {
                         ElevatedButtonCustom(
                           color: ColorsWhiteTheme.cardColor,
                           name: 'Entrar',
-                          onPressed: () async{
+                          onPressed: () async {
                             FocusManager.instance.primaryFocus?.unfocus();
-                            if (controllerEmail.text == '' ||
-                                controllerPassword.text == '') {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Credenciais inválidas'),
-                                  backgroundColor: Colors.redAccent,
-                                ),
-                              );
-                            } else {
-                              bool result = await UserController.login(controllerEmail.text,controllerPassword.text);
+                            // showDialogue(context);
+                            bool result = await UserController.login(
+                                controllerEmail.text, controllerPassword.text);
                                 print(result);
-                              if(result){
-                                Navigator.pushReplacement(context, PageTransition(child: Home(), type: PageTransitionType.fade));
-                              }else{
-                              }
+                            if (result == true) {
+                  List<Igreja>churchs = await ChurchController.getChurchs();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      PageTransition(
+                          child: ChurchList(
+                            churchs: churchs,
+                          ),
+                          type: PageTransitionType.fade,
+                          duration: Duration(milliseconds: 150)),
+                      ModalRoute.withName('/'));
+                            } else {
+                              print('object');
                             }
                           },
                         ),
@@ -197,5 +206,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-
 }

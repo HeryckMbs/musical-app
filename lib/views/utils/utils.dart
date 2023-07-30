@@ -2,12 +2,20 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:new_pib_app/controllers/ChurchController.dart';
+import 'package:new_pib_app/controllers/DepartmentController.dart';
+import 'package:new_pib_app/models/Departamento.dart';
+import 'package:new_pib_app/models/User.dart';
+import 'package:new_pib_app/models/igreja.dart';
+import 'package:new_pib_app/views/homePage/home.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../main.dart';
+import '../church/DetailChurch.dart';
+import '../church/ListChurch.dart';
+import '../department/ListDepartment.dart';
 
 // import 'package:pibfin/main.dart';
-
 
 class ColorsWhiteTheme {
   static Color homeColor = const Color(0xFFFAFAFA);
@@ -68,14 +76,13 @@ class _CifrasIndexPageState extends State<CifrasIndexPage> {
 
   @override
   Widget build(BuildContext context) {
-
     if (widget.cifra.isEmpty) {
       return const NotFoundCifras();
     } else {
       return isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(
-              color: Color(0xFF131112),
+              color: const Color(0xFF131112),
               child: Column(
                 children: [
                   widget.searchble
@@ -342,7 +349,7 @@ class CifraCard extends StatelessWidget {
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: Text(
                 ' $filename',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   color: Colors.grey,
                 ),
@@ -429,14 +436,42 @@ void showDialogue(BuildContext context) {
   showDialog(
     barrierDismissible: false,
     context: context,
-    builder: (BuildContext context) => const Center(
-        child: CircularProgressIndicator(color: Color(0xFFFFD54F))),
+    builder: (BuildContext context) => Center(
+        // /RefreshProgressIndicator()
+        // child: CircularProgressIndicator(color: Color(0xFFFFD54F),semanticsLabel: 'Carregando',semanticsValue: 'Carregando',)),
+        child: RefreshProgressIndicator(
+      color: const Color(0xFFFFD54F),
+      backgroundColor: ColorsWhiteTheme.cardColor2,
+    )),
+  );
+}
+
+void messageToUser(
+    BuildContext context, String message, Color color, IconData icon) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      elevation: 2000,
+      content: Row(children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+          child: Icon(
+            icon,
+            color: Colors.white,
+          ),
+        ),
+        Expanded(
+          child: Text(message),
+        )
+      ]),
+      backgroundColor: color,
+    ),
   );
 }
 
 void hideProgressDialogue(BuildContext context) {
-  Navigator.of(context).pop(const CircularProgressIndicator(
-    color: Color(0xFFFFD54F),
+  Navigator.of(context).pop(RefreshProgressIndicator(
+    color: const Color(0xFFFFD54F),
+    backgroundColor: ColorsWhiteTheme.cardColor2,
   ));
 }
 
@@ -463,7 +498,7 @@ class CardConteudo extends StatelessWidget {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
@@ -472,7 +507,7 @@ class CardConteudo extends StatelessWidget {
             ),
             Text(
               texto,
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             )
           ],
         ),
@@ -562,9 +597,9 @@ class Input extends StatelessWidget {
       margin: const EdgeInsets.all(5),
       child: TextFormField(
         textInputAction: action ?? TextInputAction.done,
-        style: TextStyle(color: Colors.grey),
+        style: const TextStyle(color: Colors.grey),
         onChanged: (value) async {
-          onChange!(value) ?? print('ruim');
+          onChange(value);
         },
         obscureText: password,
         controller: controller,
@@ -573,10 +608,10 @@ class Input extends StatelessWidget {
         maxLines: constLines ?? 1,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-          helperStyle: TextStyle(color: Colors.grey),
+          helperStyle: const TextStyle(color: Colors.grey),
           hintStyle: TextStyle(height: height ?? 1, color: Colors.grey),
           alignLabelWithHint: true,
-          errorStyle: TextStyle(fontWeight: FontWeight.bold),
+          errorStyle: const TextStyle(fontWeight: FontWeight.bold),
           focusedErrorBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(20)),
               borderSide: BorderSide(color: Colors.red)),
@@ -584,7 +619,7 @@ class Input extends StatelessWidget {
           enabledBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
-          border:  const OutlineInputBorder(
+          border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           errorBorder: const OutlineInputBorder(
@@ -596,9 +631,9 @@ class Input extends StatelessWidget {
             fontSize: 18,
           ),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          labelStyle: TextStyle(color: Colors.white60),
+          labelStyle: const TextStyle(color: Colors.white60),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
               borderSide: BorderSide(
                 style: BorderStyle.solid,
                 width: 3,
@@ -608,7 +643,6 @@ class Input extends StatelessWidget {
           fillColor: ColorsWhiteTheme.cardColor2,
         ),
         validator: (value) {
-          print(value);
           return validate(value);
         },
       ),
@@ -635,14 +669,14 @@ class InputDate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: TextFormField(
         onTap: () {
           onTap();
         },
-        style: TextStyle(color: Colors.grey),
+        style: const TextStyle(color: Colors.grey),
         obscureText: password,
         controller: controller,
         showCursor: false,
@@ -651,8 +685,8 @@ class InputDate extends StatelessWidget {
           contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
           hintText: nome,
           helperText: nome,
-          helperStyle: TextStyle(color: Colors.grey),
-          hintStyle: TextStyle(color: Colors.grey),
+          helperStyle: const TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey),
           enabledBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
             borderSide: BorderSide(
@@ -717,11 +751,15 @@ class ElevatedButtonCustom extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-           icon != null ? Icon(icon,color: colorText ?? Colors.black,) : Container(),
-
+            icon != null
+                ? Icon(
+                    icon,
+                    color: colorText ?? Colors.black,
+                  )
+                : Container(),
             Text(
               name,
-              style:  TextStyle(color: colorText ?? Colors.black),
+              style: TextStyle(color: colorText ?? Colors.black),
             ),
           ],
         ),
@@ -743,6 +781,44 @@ class DecorationVariables {
       borderRadius: BorderRadius.all(Radius.circular(40)),
     ),
   );
+
+  static InputDecoration decorationInput(String label) {
+    return InputDecoration(
+      contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
+      helperStyle: const TextStyle(color: Colors.grey),
+      alignLabelWithHint: true,
+      errorStyle: const TextStyle(fontWeight: FontWeight.bold),
+      focusedErrorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderSide: BorderSide(color: Colors.red)),
+      floatingLabelAlignment: FloatingLabelAlignment.start,
+      enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
+      errorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderSide: BorderSide(color: Colors.red)),
+      labelText: label,
+      floatingLabelStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+      ),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      labelStyle: const TextStyle(color: Colors.white60),
+      focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderSide: BorderSide(
+            style: BorderStyle.solid,
+            width: 3,
+            color: Color(0xFFFFD54F),
+          )),
+      filled: true,
+      fillColor: const Color(0xFF262425),
+    );
+  }
 }
 
 class ActionButton extends StatelessWidget {
@@ -838,9 +914,9 @@ class _CustomTagState extends State<CustomTag> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
+          borderRadius: const BorderRadius.all(Radius.circular(30)),
           color: widget.tagColor),
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: InkWell(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -900,17 +976,13 @@ class _BottomBarState extends State<BottomBar> {
                 //       getIt<UserCustom>().ministerioSelecionado);
 
                 //   // ignore: use_build_context_synchronously
-                //   await Navigator.pushAndRemoveUntil(
-                //       context,
-                //       PageTransition(
-                //           child: ModernPage(
-                //             pedidos: pedidos,
-                //             eventos: eventos,
-                //             avisos: avisos,
-                //           ),
-                //           type: PageTransitionType.fade,
-                //           duration: Duration(milliseconds: 150)),
-                //       ModalRoute.withName('/'));
+                await Navigator.pushAndRemoveUntil(
+                    context,
+                    PageTransition(
+                        child: Home(),
+                        type: PageTransitionType.fade,
+                        duration: const Duration(milliseconds: 150)),
+                    ModalRoute.withName('/'));
                 // }
               },
               child: Column(
@@ -954,84 +1026,124 @@ class _BottomBarState extends State<BottomBar> {
               child: Column(
                 children: [
                   Icon(Icons.calendar_month,
-                      color: widget.selecionado == 'event'
+                      color: widget.selecionado == 'programation'
                           ? Colors.amber[400]
                           : Colors.grey),
                   Expanded(
-                    child: Text('Eventos',
+                    child: Text('Programções',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
-                            color: widget.selecionado == 'event'
+                            color: widget.selecionado == 'programation'
                                 ? Colors.amber[400]
                                 : Colors.grey)),
                   ),
                 ],
               ),
             ),
+            // InkWell(
+            //   onTap: () async {
+            //     // if (widget.selecionado != 'music') {
+            //     //   setState(() {
+            //     //     widget.selecionado = 'music';
+            //     //   });
+            //     //   // ignore: use_build_context_synchronously
+            //     //   Navigator.pushAndRemoveUntil(
+            //     //       context,
+            //     //       PageTransition(
+            //     //           child: MusicMenuIndex(),
+            //     //           type: PageTransitionType.fade,
+            //     //           duration: Duration(milliseconds: 150)),
+            //     //       ModalRoute.withName('/'));
+            //     // }
+            //   },
+            //   child: Column(
+            //     children: [
+            //       Icon(Icons.music_note,
+            //           color: widget.selecionado == 'music'
+            //               ? Colors.amber[400]
+            //               : Colors.grey),
+            //       Expanded(
+            //         child: Text('Músicas',
+            //             style: TextStyle(
+            //                 fontSize: MediaQuery.of(context).size.width * 0.035,
+            //                 color: widget.selecionado == 'music'
+            //                     ? Colors.amber[400]
+            //                     : Colors.grey)),
+            //       )
+            //     ],
+            //   ),
+            // ),
+            // InkWell(
+            //   onTap: () async {
+            //     if (widget.selecionado != 'department') {
+            //       setState(() {
+            //         widget.selecionado = 'department';
+            //       });
+            //       showDialogue(context);
+            //       List<Departamento> departamentos =
+            //           await DepartmentController.getDepartmentsOfChurch(
+            //               getIt<UserCustom>().igreja_selecionada!);
+            //       await Navigator.pushAndRemoveUntil(
+            //           context,
+            //           PageTransition(
+            //               child: DepartmentList(
+            //                 departamentos: departamentos,
+            //               ),
+            //               type: PageTransitionType.fade,
+            //               duration: Duration(milliseconds: 200)),
+            //           ModalRoute.withName('/'));
+            //       // hideProgressDialogue(context);
+            //     }
+            //   },
+            //   child: Column(
+            //     children: [
+            //       Icon(Icons.groups_rounded,
+            //           color: widget.selecionado == 'department'
+            //               ? Colors.amber[400]
+            //               : Colors.grey),
+            //       Expanded(
+            //         child: Text('Departamento',
+            //             style: TextStyle(
+            //                 fontSize: MediaQuery.of(context).size.width * 0.035,
+            //                 color: widget.selecionado == 'department'
+            //                     ? Colors.amber[400]
+            //                     : Colors.grey)),
+            //       )
+            //     ],
+            //   ),
+            // ),
             InkWell(
               onTap: () async {
-                // if (widget.selecionado != 'music') {
-                //   setState(() {
-                //     widget.selecionado = 'music';
-                //   });
-                //   // ignore: use_build_context_synchronously
-                //   Navigator.pushAndRemoveUntil(
-                //       context,
-                //       PageTransition(
-                //           child: MusicMenuIndex(),
-                //           type: PageTransitionType.fade,
-                //           duration: Duration(milliseconds: 150)),
-                //       ModalRoute.withName('/'));
-                // }
+                if (widget.selecionado != 'department') {
+                  setState(() {
+                    widget.selecionado = 'department';
+                  });
+                  showDialogue(context);
+                  Igreja igreja = await ChurchController.getChurch(
+                      getIt<UserCustom>().igreja_selecionada!);
+                  await Navigator.pushAndRemoveUntil(
+                      context,
+                      PageTransition(
+                          child: DetailIgreja(
+                            igreja: igreja,
+                          ),
+                          type: PageTransitionType.fade,
+                          duration: const Duration(milliseconds: 200)),
+                      ModalRoute.withName('/'));
+                  // hideProgressDialogue(context);
+                }
               },
               child: Column(
                 children: [
-                  Icon(Icons.music_note,
-                      color: widget.selecionado == 'music'
+                  Icon(Icons.groups_rounded,
+                      color: widget.selecionado == 'department'
                           ? Colors.amber[400]
                           : Colors.grey),
                   Expanded(
-                    child: Text('Músicas',
+                    child: Text('Igreja',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
-                            color: widget.selecionado == 'music'
-                                ? Colors.amber[400]
-                                : Colors.grey)),
-                  )
-                ],
-              ),
-            ),
-            InkWell(
-              onTap: () async {
-                // if (widget.selecionado != 'integrante') {
-                //   setState(() {
-                //     widget.selecionado = 'integrante';
-                //   });
-                //   Ministerio? ministerio =
-                //       await MinisterioController.getMinisterioById(
-                //           getIt<UserCustom>().ministerioSelecionado);
-                //   Navigator.pushAndRemoveUntil(
-                //       context,
-                //       PageTransition(
-                //           child: MinisterioIndex(
-                //             ministerio: ministerio!,
-                //           ),
-                //           type: PageTransitionType.fade,
-                //           duration: Duration(milliseconds: 150)),
-                //       ModalRoute.withName('/'));
-                // }
-              },
-              child: Column(
-                children: [
-                  Icon(Icons.people,
-                      color: widget.selecionado == 'integrante'
-                          ? Colors.amber[400]
-                          : Colors.grey),
-                  Expanded(
-                    child: Text('Ministério',
-                        style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.035,
-                            color: widget.selecionado == 'integrante'
+                            color: widget.selecionado == 'department'
                                 ? Colors.amber[400]
                                 : Colors.grey)),
                   )
@@ -1104,12 +1216,12 @@ class HeaderHomePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Seja bem vindo,", style: TextStyle()),
+                  Text("Seja bem vindo,", style: TextStyle()),
                   Row(
                     children: [
                       Expanded(
@@ -1164,7 +1276,7 @@ class HeaderStandard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(title, style: TextStyle()),
+                  Text(title, style: const TextStyle()),
                 ],
               ),
             ),
@@ -1202,7 +1314,7 @@ class DropdownCheckbox extends StatelessWidget {
       ),
       child: Container(
         child: DropdownButton(
-          padding: EdgeInsets.all(5),
+          padding: const EdgeInsets.all(5),
           dropdownColor: ColorsWhiteTheme.cardColor2,
           value: defaultValue,
           icon: const Padding(
@@ -1239,14 +1351,14 @@ class WideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
           color: Colors.black26, borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Icon(icon, color: ColorsWhiteTheme.cardColor),
           ),
           Expanded(
@@ -1264,7 +1376,7 @@ class WideCard extends StatelessWidget {
                 description != ''
                     ? Text(
                         description,
-                        style: TextStyle(color: Colors.grey),
+                        style: const TextStyle(color: Colors.grey),
                       )
                     : Container(),
                 Column(

@@ -59,4 +59,51 @@ class PermissionFirebase {
     nome = nomeGrupo ?? 'Padrão';
     idPermissao = id ?? '';
   }
+
+  factory PermissionFirebase.fromJson(Map<String, dynamic> json) =>
+      PermissionFirebase(
+        json['igreja'],
+        json['campanha'],
+        json['campanha_culto'],
+        json['evento'],
+        json['evento_musicas'],
+        json['evento_integrantes'],
+        json['culto'],
+        json['departamento'],
+        json['departamento_integrantes'],
+        json['departamento_avisos'],
+        json['musicas'],
+        json['pedidos_oracao'],
+        json['pedidos_musica'],
+        json['pastas'],
+        json['cifras'],
+        json['categorias'],
+        json['membros'],
+        json['nome'],
+        json['idPermissao'],
+      );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'igreja': igreja,
+      'campanha': campanha,
+      'campanha_culto': campanha_culto,
+      'evento': evento,
+      'evento_musicas': evento_musicas,
+      'evento_integrantes': evento_integrantes,
+      'culto': culto,
+      'departamento': departamento,
+      'departamento_integrantes': departamento_integrantes,
+      'departamento_avisos': departamento_avisos,
+      'musicas': musicas,
+      'pedidos_oracao': pedidos_oracao,
+      'pedidos_musica': pedidos_musica,
+      'pastas': pastas,
+      'cifras': cifras,
+      'categorias': categorias,
+      'membros': membros,
+      'nome': nome,
+      'idPermissao': idPermissao,
+    };
+  }
 }

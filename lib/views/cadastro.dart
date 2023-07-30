@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -5,28 +7,42 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:new_pib_app/controllers/UserController.dart';
 import 'package:new_pib_app/views/utils/utils.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Cadastro extends StatefulWidget {
-  const Cadastro({super.key});
+import '../controllers/ChurchController.dart';
+import '../models/igreja.dart';
+import 'church/ListChurch.dart';
 
+class Cadastro extends StatefulWidget {
+ Cadastro({super.key, required this.igrejas});
+  List<Igreja> igrejas;
   @override
   _CadastroState createState() => _CadastroState();
 }
 
 class _CadastroState extends State<Cadastro> {
   bool loading = false;
-  TextEditingController controllerNome= TextEditingController();
+  TextEditingController controllerNome = TextEditingController();
   TextEditingController controllerEmail = TextEditingController();
   TextEditingController controllerPassword = TextEditingController();
-
+  List<Igreja> igrejas = [];
+  int idIgrejaSelecionada = 0;
   @override
   void dispose() {
     controllerEmail.dispose();
     controllerPassword.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    igrejas= widget.igrejas;
+    idIgrejaSelecionada = igrejas.first.id!;
+    super.initState();
   }
 
   @override
@@ -115,8 +131,8 @@ class _CadastroState extends State<Cadastro> {
                     nome: 'Email',
                     password: false,
                   ),
-                ),         
-                       Padding(
+                ),
+                Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Input(
                     onTap: () {},
@@ -128,7 +144,57 @@ class _CadastroState extends State<Cadastro> {
                     password: true,
                   ),
                 ),
-  
+                    DropdownButtonFormField(
+                        enableFeedback: true,
+                        decoration: DecorationVariables.decorationInput('Igreja'),
+                        dropdownColor: ColorsWhiteTheme.cardColor2,
+                        value: idIgrejaSelecionada,
+                        padding: EdgeInsets.all(8),
+                        icon: Icon(
+                          Icons.arrow_downward,
+                          color: Colors.grey,
+                        ),
+                        isExpanded: true,
+                        onChanged: (value) {},
+
+                        iconEnabledColor: ColorsWhiteTheme.cardColor2,
+                        items:
+                            igrejas.map<DropdownMenuItem<int>>((Igreja igreja) {
+                          return DropdownMenuItem<int>(
+                              onTap: () {
+                                setState(() {
+                                  idIgrejaSelecionada = igreja.id!;
+                                });
+                              },
+                              value: igreja.id,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    color: ColorsWhiteTheme.cardColor2,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                child: StatefulBuilder(
+                                    builder: ((context, setState) {
+                                  return Row(
+                                    children: [
+                                      Icon(
+                                        Icons.person,
+                                        color: ColorsWhiteTheme.cardColor,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          igreja.nome!,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                })),
+                              ));
+                        }).toList(),
+                      ),
+                     
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Row(
@@ -137,7 +203,7 @@ class _CadastroState extends State<Cadastro> {
                         ElevatedButtonCustom(
                           color: ColorsWhiteTheme.cardColor,
                           name: 'Cdastrar',
-                          onPressed: () {
+                          onPressed: () async {
                             FocusManager.instance.primaryFocus?.unfocus();
                             if (controllerEmail.text == '' ||
                                 controllerPassword.text == '') {
@@ -148,55 +214,51 @@ class _CadastroState extends State<Cadastro> {
                                 ),
                               );
                             } else {
-                              Cadastro();
+                              Map<String, dynamic> result =
+                                  await UserController.register(
+                                      controllerEmail.text,
+                                      controllerPassword.text,
+                                      controllerNome.text,idIgrejaSelecionada);
+                              if (result['success']) {
+                                bool logged = await UserController.login(
+                                    controllerEmail.text,
+                                    controllerPassword.text);
+                                if (logged) {
+
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      PageTransition(
+                                          child: ChurchList(
+                                            churchs: igrejas,
+                                          ),
+                                          type: PageTransitionType.fade,
+                                          duration:
+                                              Duration(milliseconds: 150)),
+                                      ModalRoute.withName('/'));
+                                }
+                              } else {
+                                // ignore: use_build_context_synchronously
+                                messageToUser(
+                                    context,
+                                    result['message'],
+                                    result['success']
+                                        ? Colors.green
+                                        : Colors.red,
+                                    result['success']
+                                        ? Icons.done
+                                        : Icons.dangerous);
+                              }
                             }
                           },
                         ),
-
                       ]),
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.height * 0.05,
-                      horizontal: MediaQuery.of(context).size.width * 0.07),
-                  child: const Center(
-                    child: Text(
-                      'Louvarei ao Senhor em todo o tempo o seu louvor estará continuamente na minha boca. Salmo 34:1',
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ),
+
               ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  Cadastro() async {
-        var fullUrl = Uri.http(
-      '192.168.1.105:8000',
-      '/api/register',
-    );
-  
-
-                                
-    var response = await http.post(fullUrl,
-        body: jsonEncode({
-          "email": controllerEmail.text,
-          "password": controllerPassword.text,
-          'name': controllerNome.text
-        }),headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',});
-        print(jsonDecode(response.body));
-        // headers:{
-        //   'Authorization' : 'Bearer ${localStorage.getString('access_token')!}',
-        //   'Accept' : 'application/json'
-        // });
-
   }
 }
