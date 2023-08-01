@@ -67,8 +67,7 @@ class ChurchController {
       print(e);
     }
     return membros;
-  }  
-
+  }
 
   static Future<Map<String, dynamic>> createChurch(
       String nome, String telefone) async {
@@ -85,6 +84,30 @@ class ChurchController {
       response = await http.post(fullUrl,
           body: {'nome': nome, 'telefone': telefone},
           headers: {'Authorization': "Bearer " + accessToken!});
+      data = jsonDecode(response.body);
+    } on Exception catch (e) {
+      print(e);
+    }
+    return data;
+  }
+
+  static Future<Map<String, dynamic>> EditChurch(Igreja igreja) async {
+    String? accessToken = getIt<UserCustom>().access_token;
+    var fullUrl = Uri.http(
+      dotenv.env['host']!,
+      '/api/church/${igreja.id}/updateChurch',
+    );
+    late Response response;
+
+    Map<String, dynamic> data = {'': ''};
+
+    try {
+      response = await http
+          .put(fullUrl, body: jsonEncode({'igreja': igreja}), headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': "Bearer " + accessToken!
+      });
       data = jsonDecode(response.body);
     } on Exception catch (e) {
       print(e);

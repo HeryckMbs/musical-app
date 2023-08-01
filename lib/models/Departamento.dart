@@ -3,7 +3,7 @@ class Departamento {
   String? nome;
   String? descricao;
   String? objetivo;
-  Null? backgroundUrl;
+  String? backgroundUrl;
   int? louvor;
   int? idLider;
   int? idIgreja;

@@ -681,35 +681,7 @@ class InputDate extends StatelessWidget {
         controller: controller,
         showCursor: false,
         readOnly: true,
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-          hintText: nome,
-          helperText: nome,
-          helperStyle: const TextStyle(color: Colors.grey),
-          hintStyle: const TextStyle(color: Colors.grey),
-          enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            borderSide: BorderSide(
-              color: Colors.black,
-            ),
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: const Color.fromRGBO(248, 213, 0, 1),
-          ),
-          focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              borderSide: BorderSide(
-                color: Colors.black,
-              )),
-          filled: true,
-          fillColor: ColorsWhiteTheme.cardColor2,
-          hoverColor: Colors.black,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-        ),
+        decoration: DecorationVariables.decorationInput(nome)
       ),
     );
   }
@@ -873,8 +845,10 @@ Future<DateTime?> showDateTimePicker({
   if (!context.mounted) return selectedDate;
 
   final TimeOfDay? selectedTime = await showTimePicker(
+
     context: context,
     initialTime: TimeOfDay.fromDateTime(selectedDate),
+
   );
 
   return selectedTime == null

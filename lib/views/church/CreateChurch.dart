@@ -11,10 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/igreja.dart';
 
-
 @immutable
 class CreateChurch extends StatefulWidget {
-  CreateChurch({super.key,required this.churchs});
+  CreateChurch({super.key, required this.churchs});
   List<Igreja> churchs;
   @override
   _CreateChurchState createState() => _CreateChurchState();
@@ -27,7 +26,6 @@ class _CreateChurchState extends State<CreateChurch> {
 
   TextEditingController nomeInput = new TextEditingController();
   TextEditingController telefoneInput = new TextEditingController();
-  
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +39,10 @@ class _CreateChurchState extends State<CreateChurch> {
         child: Container(
           child: Column(
             children: [
-              HeaderStandard( title: 'Criar Igreja',),
-   Padding(
+              HeaderStandard(
+                title: 'Criar Igreja',
+              ),
+              Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Form(
                   key: _formKey,
@@ -74,27 +74,29 @@ class _CreateChurchState extends State<CreateChurch> {
                           nome: 'Telefone',
                           icon: Icons.abc,
                           password: false),
-
-
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButtonCustom(
                           onPressed: () async {
                             showDialogue(context);
                             if (_formKey.currentState!.validate()) {
-                              Map<String,dynamic> response = await ChurchController.createChurch(nomeInput.text, telefoneInput.text);
-                              if(response['success']){
+                              Map<String, dynamic> response =
+                                  await ChurchController.createChurch(
+                                      nomeInput.text, telefoneInput.text);
+                              if (response['success']) {
                                 Navigator.of(context).pop();
                               }
                               ScaffoldMessenger.of(context).showSnackBar(
-                                 SnackBar(
+                                SnackBar(
                                   elevation: 2000,
                                   content: Row(children: [
-                                     Padding(
+                                    Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.0, vertical: 4),
                                       child: Icon(
-                                        response['success'] ? Icons.done : Icons.dangerous,
+                                        response['success']
+                                            ? Icons.done
+                                            : Icons.dangerous,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -102,7 +104,9 @@ class _CreateChurchState extends State<CreateChurch> {
                                       child: Text(response['message']),
                                     )
                                   ]),
-                                  backgroundColor: response['success'] ? Colors.green : Colors.red,
+                                  backgroundColor: response['success']
+                                      ? Colors.green
+                                      : Colors.red,
                                 ),
                               );
                             }
@@ -116,7 +120,6 @@ class _CreateChurchState extends State<CreateChurch> {
                   ),
                 ),
               )
-           
             ],
           ),
         ),
@@ -124,4 +127,3 @@ class _CreateChurchState extends State<CreateChurch> {
     );
   }
 }
-

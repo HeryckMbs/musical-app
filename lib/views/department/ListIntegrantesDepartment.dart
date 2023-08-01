@@ -16,10 +16,12 @@ class DepartmentIntegranteList extends StatefulWidget {
       {super.key,
       required this.membros,
       required this.idDepartament,
+      required this.idIgreja,
       required this.funcoes});
   List<Member> membros;
   List<Funcao> funcoes;
   int idDepartament;
+  int idIgreja;
 
   @override
   _DepartmentIntegranteListState createState() =>
@@ -172,8 +174,8 @@ class _DepartmentIntegranteListState extends State<DepartmentIntegranteList> {
           onPressed: () async {
             showDialogue(context);
             List<Member> membros =
-                await DepartmentController.getMembersWithoutDeparment(
-                    widget.idDepartament);
+                await DepartmentController.getMembersWithoutDeparment(widget.idDepartament,
+                    widget.idIgreja);
             await Navigator.push(
                 context,
                 PageTransition(
@@ -201,7 +203,8 @@ class _DepartmentIntegranteListState extends State<DepartmentIntegranteList> {
               ),
               Container(
                 padding: EdgeInsets.all(0),
-                margin: EdgeInsets.all(10),
+                             margin: EdgeInsets.only(left:10,right: 10, top: 10, bottom: MediaQuery.of(context).size.height * 0.1),
+
                 decoration: BoxDecoration(
                     color: ColorsWhiteTheme.cardColor2,
                     borderRadius: BorderRadius.all(Radius.circular(20))),

@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_pib_app/models/User.dart';
 import 'package:new_pib_app/views/external.dart';
 import 'package:new_pib_app/views/homePage/home.dart';
 import 'package:new_pib_app/views/login.dart';
+import 'package:new_pib_app/views/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -36,8 +38,53 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(useMaterial3: true, fontFamily: 'Montserrat'),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
+        supportedLocales: const [
+          Locale('pt', 'BR')
+        ],
+        title: 'PIB Finsocial',
+        themeMode: ThemeMode.dark,
+        
+
+        theme: ThemeData(
+            useMaterial3: true,
+            fontFamily: 'Montserrat',
+
+            timePickerTheme: TimePickerThemeData(
+
+              backgroundColor: ColorsWhiteTheme.cardColor2,
+              hourMinuteTextColor: Colors.white,
+              entryModeIconColor: ColorsWhiteTheme.cardColor,
+              dialTextColor: Colors.white,
+              hourMinuteColor: ColorsWhiteTheme.cardColor2,
+              helpTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            datePickerTheme: DatePickerThemeData(
+                backgroundColor: ColorsWhiteTheme.cardColor2,
+                dayForegroundColor:
+                    MaterialStateColor.resolveWith((states) => Colors.white),
+                yearForegroundColor:
+                    MaterialStateColor.resolveWith((states) => Colors.white),
+                todayForegroundColor: MaterialStateColor.resolveWith(
+                    (states) => ColorsWhiteTheme.cardColor),
+                yearOverlayColor: MaterialStateColor.resolveWith(
+                    (states) => ColorsWhiteTheme.cardColor),
+                headerHeadlineStyle:
+                    const TextStyle(color: Colors.white, fontSize: 25),
+                headerHelpStyle: const TextStyle(
+                  color: Colors.white,
+                ),
+                headerForegroundColor: Colors.white,
+                rangePickerHeaderForegroundColor: Colors.white,
+                rangeSelectionBackgroundColor: Colors.white,
+                yearStyle: const TextStyle(color: Colors.red),
+                yearBackgroundColor: MaterialStateColor.resolveWith(
+                    (states) => ColorsWhiteTheme.cardColor2),
+                weekdayStyle: TextStyle(color: ColorsWhiteTheme.cardColor),
+                dayStyle: const TextStyle(color: Colors.white))),
         debugShowCheckedModeBanner: false,
         home: HomePublic());
   }
@@ -62,17 +109,17 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: widget.isLogged
-          ? Center(
+          ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'You have pushed the button this many times:',
                   ),
                 ],
               ),
             )
-          : Text('data'),
+          : const Text('data'),
     );
   }
 }

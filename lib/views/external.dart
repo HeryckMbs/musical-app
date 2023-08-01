@@ -171,6 +171,8 @@ class _HomePublicState extends State<HomePublic> {
                         children: [
                           InkWell(
                               onTap: () async {
+
+
                                 showDialogue(context);
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();

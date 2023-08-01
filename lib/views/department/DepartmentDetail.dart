@@ -9,6 +9,7 @@ import 'package:new_pib_app/models/User.dart';
 import 'package:new_pib_app/models/igreja.dart';
 import 'package:new_pib_app/views/church/CreateChurch.dart';
 import 'package:new_pib_app/views/department/CreateDepartment.dart';
+import 'package:new_pib_app/views/department/EditDepartamento.dart';
 import 'package:new_pib_app/views/external.dart';
 import 'package:new_pib_app/views/login.dart';
 import 'package:new_pib_app/views/membros/ListMembers.dart';
@@ -119,6 +120,7 @@ class _DepartmentDetailState extends State<DepartmentDetail> {
                                 child: DepartmentIntegranteList(
                                   funcoes: funcoes,
                                   membros: membros,
+                                  idIgreja: departamento.idIgreja!,
                                   idDepartament: departamento.id!,
                                 ),
                                 duration: const Duration(milliseconds: 200),
@@ -275,31 +277,49 @@ class _DepartmentDetailState extends State<DepartmentDetail> {
                             ]),
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.all(2),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.calendar_month_outlined,
-                                    color: ColorsWhiteTheme.cardColor,
-                                  ),
+                    InkWell(
+                      onTap: () async{
+                        showDialogue(context);
+                               List<Member> membros =
+                            await ChurchController.getMembers(
+                                getIt<UserCustom>().igreja_selecionada!);
+                                      await Navigator.push(
+                            context,
+                            PageTransition(
+                                child: EditDepartament(
+                                  departamento: widget.departamento,
+                                  membros: membros,
                                 ),
-                                const Text(
-                                  'Cultos',
-                                  style: TextStyle(color: Colors.grey),
-                                )
-                              ],
-                            ),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: ColorsWhiteTheme.cardColor,
-                            )
-                          ]),
+                                duration: const Duration(milliseconds: 200),
+                                type: PageTransitionType.fade));
+                                hideProgressDialogue(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(2),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.settings,
+                                      color: ColorsWhiteTheme.cardColor,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Configuração do departamento',
+                                    style: TextStyle(color: Colors.grey),
+                                  )
+                                ],
+                              ),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: ColorsWhiteTheme.cardColor,
+                              )
+                            ]),
+                      ),
                     ),
                   ],
                 ),

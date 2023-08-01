@@ -111,16 +111,25 @@ class _FunctionsListState extends State<FunctionsList> {
               ),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  Map<String, dynamic> response =
-                      await DepartmentFunctionController.createFunction(
-                          nomeFuncao.text,
-                          descricao.text,
-                          widget.idDepartament);
+                  showDialogue(context);
+                  Map<String, dynamic> response = {};
+                  if (funcao != null) {
+                    response = await DepartmentFunctionController.updateFuncao(
+                        funcao.id!, nomeFuncao.text, descricao.text);
+                  } else {
+                    response =
+                        await DepartmentFunctionController.createFunction(
+                            nomeFuncao.text,
+                            descricao.text,
+                            widget.idDepartament);
+                  }
                   if (response['success']) {
                     nomeFuncao.clear();
                     descricao.clear();
                     Navigator.of(context).pop();
                   }
+                  hideProgressDialogue(context);
+                  // ignore: use_build_context_synchronously
                   messageToUser(
                       context,
                       response['message'],
@@ -144,10 +153,8 @@ class _FunctionsListState extends State<FunctionsList> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: ColorsWhiteTheme.cardColor,
           onPressed: () async {
-            showDialogue(context);
             await modalFuncao(null);
             await updatePage();
-            hideProgressDialogue(context);
           },
           child: const Icon(Icons.add)),
       // bottomNavigationBar: BottomBar(
@@ -163,14 +170,14 @@ class _FunctionsListState extends State<FunctionsList> {
               ),
               Container(
                 padding: EdgeInsets.all(0),
-                margin: EdgeInsets.all(10),
+                margin: EdgeInsets.only(left:10,right: 10, top: 10, bottom: MediaQuery.of(context).size.height * 0.1),
                 decoration: BoxDecoration(
                     color: ColorsWhiteTheme.cardColor2,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: ListView.builder(
                   itemCount: funcoes.length,
                   shrinkWrap: true,
-                  padding: EdgeInsets.all(0),
+                  padding: EdgeInsets.only(bottom:20),
                   physics: const ScrollPhysics(),
                   itemBuilder: (context, index) {
                     return InkWell(
@@ -180,12 +187,119 @@ class _FunctionsListState extends State<FunctionsList> {
                           description: funcoes[index].descricao!,
                           icon: Icons.groups_rounded,
                           actions: [
-                            InkWell(
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: ColorsWhiteTheme.cardColor,
+                            Container(
+                              child: PopupMenuButton(
+                                constraints: BoxConstraints.tight(Size(
+                                    MediaQuery.of(context).size.width,
+                                    MediaQuery.of(context).size.height * 0.2)),
+                                color: ColorsWhiteTheme.cardColor2,
+                                tooltip: 'Opções',
+                                icon: Icon(
+                                  Icons.menu,
+                                  color: ColorsWhiteTheme.cardColor,
+                                ),
+                                onSelected: (item) async {
+                                  await item();
+                                },
+                                itemBuilder: (BuildContext context) => [
+                                  PopupMenuItem<Function>(
+                                    enabled: false,
+                                    value: () async {},
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Alterando: ',
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            ' ${funcoes[index].nome!}',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                                fontStyle: FontStyle.italic),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<Function>(
+                                    value: () async {
+                                      nomeFuncao.text = funcoes[index].nome!;
+                                      descricao.text =
+                                          funcoes[index].descricao!;
+                                      await modalFuncao(funcoes[index]);
+                                      await updatePage();
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                                  color: Colors.black,
+                                                  width: 2))),
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.badge,
+                                              color: ColorsWhiteTheme.cardColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Editar',
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem<Function>(
+                                    value: () async {
+                                      Map<String, dynamic> response = {};
+
+                                      response =
+                                          await DepartmentFunctionController
+                                              .deleteFuncao(funcoes[index].id!);
+
+                                     await updatePage();
+                                      // ignore: use_build_context_synchronously
+                                      messageToUser(
+                                          context,
+                                          response['message'],
+                                          response['success']
+                                              ? Colors.green
+                                              : Colors.red,
+                                          response['success']
+                                              ? Icons.done
+                                              : Icons.dangerous);
+                                    },
+                                    child: Container(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.dangerous,
+                                              color: ColorsWhiteTheme.cardColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Excluir',
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            )
+                            ),
                           ],
                         ));
                   },

@@ -7,6 +7,8 @@ import 'package:new_pib_app/models/Departamento.dart';
 import 'package:new_pib_app/models/User.dart';
 import 'package:new_pib_app/models/igreja.dart';
 import 'package:new_pib_app/views/church/CreateChurch.dart';
+import 'package:new_pib_app/views/church/EditChurch.dart';
+import 'package:new_pib_app/views/culto/ListCultos.dart';
 import 'package:new_pib_app/views/department/CreateDepartment.dart';
 import 'package:new_pib_app/views/external.dart';
 import 'package:new_pib_app/views/login.dart';
@@ -40,11 +42,11 @@ class _DetailIgrejaState extends State<DetailIgreja> {
   }
 
   updatePage() async {
-    // List<Departamento> dpts = await DepartmentController.getDepartmentsOfChurch(
-    //     getIt<UserCustom>().igreja_selecionada!);
-    // setState(() {
-    //   departamentos = dpts;
-    // });
+    Igreja igrejaReq = await ChurchController.getChurch(
+        getIt<UserCustom>().igreja_selecionada!);
+    setState(() {
+      igreja = igrejaReq;
+    });
   }
 
   @override
@@ -53,28 +55,6 @@ class _DetailIgrejaState extends State<DetailIgreja> {
       bottomNavigationBar: BottomBar(
         selecionado: selecionado,
       ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: ColorsWhiteTheme.cardColor,
-          onPressed: () async {
-            showDialogue(context);
-            // List<Member> membros = await ChurchController.getMembers(
-            //     getIt<UserCustom>().igreja_selecionada!);
-            // await Navigator.push(
-            //     context,
-            //     PageTransition(
-            //         child: CreateDepartment(
-            //           membros: membros,
-            //         ),
-            //         duration: const Duration(milliseconds: 200),
-            //         type: PageTransitionType.fade));
-
-            await updatePage();
-            hideProgressDialogue(context);
-          },
-          child: const Icon(Icons.add)),
-      // bottomNavigationBar: BottomBar(
-      //   selecionado: selecionado,
-      // ),
       backgroundColor: const Color(0xFF131112),
       body: SingleChildScrollView(
         child: Container(
@@ -93,7 +73,7 @@ class _DetailIgrejaState extends State<DetailIgreja> {
                 ),
               ),
               Container(
-                height: 250,
+                height: 300,
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.all(10),
                 width: MediaQuery.of(context).size.width,
@@ -120,7 +100,7 @@ class _DetailIgrejaState extends State<DetailIgreja> {
                                     departamentos: departamentos),
                                 duration: const Duration(milliseconds: 200),
                                 type: PageTransitionType.fade));
-                                hideProgressDialogue(context);
+                        hideProgressDialogue(context);
                       },
                       child: Container(
                         margin: const EdgeInsets.all(2),
@@ -154,9 +134,9 @@ class _DetailIgrejaState extends State<DetailIgreja> {
                       ),
                     ),
                     InkWell(
-                      onTap: () async{
+                      onTap: () async {
                         showDialogue(context);
-                                                                        List<Member> membros =
+                        List<Member> membros =
                             await ChurchController.getMembers(
                                 getIt<UserCustom>().igreja_selecionada!);
 
@@ -166,7 +146,7 @@ class _DetailIgrejaState extends State<DetailIgreja> {
                                 child: MemberList(membros: membros),
                                 duration: const Duration(milliseconds: 200),
                                 type: PageTransitionType.fade));
-                                hideProgressDialogue(context);
+                        hideProgressDialogue(context);
                       },
                       child: Container(
                         margin: const EdgeInsets.all(2),
@@ -259,31 +239,85 @@ class _DetailIgrejaState extends State<DetailIgreja> {
                             )
                           ]),
                     ),
-                    Container(
-                      margin: const EdgeInsets.all(2),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.calendar_month_outlined,
-                                    color: ColorsWhiteTheme.cardColor,
+                    InkWell(
+                      onTap: () async{
+                        showDialogue(context);
+                        await Navigator.push(context, PageTransition(child: CultosList(), type: PageTransitionType.fade));
+                        hideProgressDialogue(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                            border: Border(
+                                bottom:
+                                    BorderSide(color: Colors.black, width: 2))),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.calendar_month_outlined,
+                                      color: ColorsWhiteTheme.cardColor,
+                                    ),
                                   ),
-                                ),
-                                const Text(
-                                  'Cultos',
-                                  style: TextStyle(color: Colors.grey),
-                                )
-                              ],
-                            ),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: ColorsWhiteTheme.cardColor,
-                            )
-                          ]),
+                                  const Text(
+                                    'Cultos',
+                                    style: TextStyle(color: Colors.grey),
+                                  )
+                                ],
+                              ),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: ColorsWhiteTheme.cardColor,
+                              )
+                            ]),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        showDialogue(context);
+                        List<Member> membros =
+                            await ChurchController.getMembers(
+                                getIt<UserCustom>().igreja_selecionada!);
+                        await Navigator.push(
+                            context,
+                            PageTransition(
+                                child: EditChurch(
+                                    membros: membros, church: igreja),
+                                type: PageTransitionType.fade,
+                                reverseDuration: Duration(microseconds: 400)));
+                        await updatePage();
+                        hideProgressDialogue(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(2),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.settings,
+                                      color: ColorsWhiteTheme.cardColor,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Configurações da igreja',
+                                    style: TextStyle(color: Colors.grey),
+                                  )
+                                ],
+                              ),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: ColorsWhiteTheme.cardColor,
+                              )
+                            ]),
+                      ),
                     ),
                   ],
                 ),

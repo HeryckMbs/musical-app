@@ -160,13 +160,14 @@ class DepartmentController {
     return data;
   }
 
-    static Future<List<Member>> getMembersWithoutDeparment(int id_department) async {
+    static Future<List<Member>> getMembersWithoutDeparment(int idDepartamento,int id_igreja) async {
     List<Member> membros = [];
     try {
       String? accessToken = getIt<UserCustom>().access_token;
       var fullUrl =
-          Uri.http(dotenv.env['host']!, '/api/department/$id_department/membrosWithoutDepartment');
-      var response = await http.get(fullUrl, headers: {
+          Uri.http(dotenv.env['host']!, '/api/department/$id_igreja/membrosWithoutDepartment/$idDepartamento');
+      var response = await http.get(fullUrl, 
+      headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json',
         'Authorization': "Bearer " + accessToken!
@@ -183,5 +184,33 @@ class DepartmentController {
       print(e);
     }
     return membros;
+  }
+
+  static Future<Map<String,dynamic>> EditDepartament(Departamento departamento) async{
+    String? accessToken = getIt<UserCustom>().access_token;
+    var fullUrl = Uri.http(
+      dotenv.env['host']!,
+      '/api/department/${departamento.id}/updateDepartamento',
+    );
+    late Response response;
+    Map<String, dynamic> data = {'': ''};
+
+    try {
+      response = await http.put(fullUrl, body:json.encode( {
+        'departamento': departamento.toJson(),
+      }), headers: {
+        'Authorization': "Bearer ${accessToken!}",
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+      });
+      data = jsonDecode(response.body);
+      if(data['erros'] != null){
+        data['success'] = false;
+        data['message'] = json.decode(data['erros']).toString();
+      }
+    } on Exception catch (e) {
+      print(e);
+    }
+    return data;
   }
 }

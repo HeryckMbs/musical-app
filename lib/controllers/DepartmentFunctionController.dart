@@ -66,5 +66,49 @@ class DepartmentFunctionController {
 
   }
 
+  static Future<Map<String,dynamic>> updateFuncao(int idFunction, String nome, String descricao) async{
+          Map<String, dynamic> data = {};
+    try {
+      var fullUrl = Uri.http(
+        dotenv.env['host']!,
+        'api/department/${idFunction}/updateFunction',
+      );
+      String? token = getIt<UserCustom>().access_token;
+      var response = await http.put(fullUrl,
+          body: json.encode({'nome': nome,'descricao':descricao}),
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token'
+          });
+        
+      data = jsonDecode(response.body);
+    } on Exception catch (e) {
+      print(e);
+    }
+    return data;
+  } 
+   static Future<Map<String,dynamic>> deleteFuncao(int idFunction) async{
+          Map<String, dynamic> data = {};
+    try {
+      var fullUrl = Uri.http(
+        dotenv.env['host']!,
+        'api/department/deleteFunction/${idFunction}',
+      );
+      String? token = getIt<UserCustom>().access_token;
+      var response = await http.delete(fullUrl,
+          headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token'
+          });
+        
+      data = jsonDecode(response.body);
+    } on Exception catch (e) {
+      print(e);
+    }
+    return data;
+  }
+
 
 }
