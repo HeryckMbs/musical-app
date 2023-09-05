@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_launcher_icons/constants.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:new_pib_app/controllers/EquipeController.dart';
 import 'package:new_pib_app/controllers/UserController.dart';
 import 'package:new_pib_app/views/Equipe/EscolhaEquipe.dart';
 import 'package:page_transition/page_transition.dart';
 
-import 'login.dart';
-import 'utils/utils.dart';
+import '../home/home.dart';
+import '../utils/utils.dart';
 
-class Cadastro extends StatefulWidget {
-  Cadastro({
+
+class CadastroEquipe extends StatefulWidget {
+  CadastroEquipe({
     super.key,
   });
 
   @override
-  State<Cadastro> createState() => _CadastroState();
+  State<CadastroEquipe> createState() => _CadastroEquipeState();
 }
 
-class _CadastroState extends State<Cadastro> {
-  TextEditingController email = new TextEditingController();
-  TextEditingController senha = new TextEditingController();
+class _CadastroEquipeState extends State<CadastroEquipe> {
   TextEditingController nome = new TextEditingController();
+  TextEditingController descricao = new TextEditingController();
+  bool open = false;
   @override
   void dispose() {
     // Limpa os controladores quando o widget for descartado
-    email.dispose();
-    senha.dispose();
     nome.dispose();
+    descricao.dispose();
     super.dispose();
   }
   @override
@@ -59,9 +60,9 @@ class _CadastroState extends State<Cadastro> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 18.0, horizontal: 0),
+                  const EdgeInsets.symmetric(vertical: 18.0, horizontal: 0),
                   child: Text(
-                    'Cadastro',
+                    'Cadastrar equipe',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 30,
@@ -87,14 +88,13 @@ class _CadastroState extends State<Cadastro> {
                     style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Cadastre-se e tenha acesso ao um amplo repertório de músicas evangélicas!',
+                    'Crie sua equipe e tenha mais facilidade ao tocar em grupo!',
                   ),
                   // InputElement(type: )
                   Padding(
                     padding: const EdgeInsets.only(bottom: 28.0,top: 24),
                     child: Input(
-                      nome: 'Nome',
-                      dark: false,
+                      nome: 'Nome da equipe',
                       onChange: (value) {},
                       onTap: () {},
                       password: false,
@@ -103,63 +103,51 @@ class _CadastroState extends State<Cadastro> {
                       action: TextInputAction.next,
                       controller: nome,
                     ),
-                  ), Padding(
-                    padding: const EdgeInsets.only(bottom:28.0),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 28.0,),
                     child: Input(
-                      nome: 'E-mail',
+                      nome: 'Descrição',
+                      constLines: 3,
                       onChange: (value) {},
                       onTap: () {},
-                      dark: false,
                       password: false,
                       validate: (value) {},
                       icon: null,
                       action: TextInputAction.next,
-                      controller: email,
+                      controller: descricao,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 38.0),
-                    child: Input(
-                      onTap: () {},
-                      dark: false,
-                      validate: (value) {},
-                      action: TextInputAction.done,
-                      onChange: (value) {
-
-
-                      },
-                      controller: senha,
-                      icon: Icons.password,
-                      nome: 'Senha',
-                      password: true,
-                    ),
+                  CheckboxListTile(
+                    subtitle: Text('Qualquer pessoa com o código da equipe poderá ingressar nela.'),
+                    title: const Text('Aberta externamente'),
+                    value: open,
+                    activeColor: StandardTheme.homeColor,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        open = value! ;
+                      });
+                    },
+                    secondary: const Icon(Icons.door_front_door),
                   ),
                   GestureDetector(
                     onTap: () async{
-                      if(email.text.isEmpty && nome.text.isEmpty && senha.text.isEmpty ){
-                        messageToUser(context, 'Todos os campos são obrigatórios', Colors.red, Icons.dangerous);
-                      }else{
+                      showDialogue(context);
+                      Map<dynamic,dynamic> result = await   EquipeController.createEquipe(nome.text, descricao.text, open);
+                      print(result);
+                      if(result['success']){
+                      await  Navigator.push(context, PageTransition(child: Home(), type: PageTransitionType.fade));
 
-                       var a = await UserController.register(email.text, senha.text, nome.text);
-                       print(a);
-                       if(a['success']){
-
-                          bool logged = await UserController.login(email.text, senha.text);
-                          if(logged){
-                            Navigator.push(context, PageTransition(child: EscolhaEquipe(), type: PageTransitionType.fade));
-
-                          }
-
-                       }
                       }
+                      hideProgressDialogue(context);
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       margin: EdgeInsets.only(top: 15),
-                      decoration: BoxDecoration(color: email.text.isEmpty && nome.text.isEmpty && senha.text.isEmpty ? StandardTheme.disabledPrimary : StandardTheme.homeColor,borderRadius:BorderRadius.all(Radius.circular(10))),
+                      decoration: BoxDecoration(color: nome.text.isEmpty ? StandardTheme.disabledPrimary : StandardTheme.homeColor,borderRadius:BorderRadius.all(Radius.circular(10))),
                       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                       child: Text(
-                        'Cadastrar',
+                        'Cadastrar Equipe',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 17),
                       ),

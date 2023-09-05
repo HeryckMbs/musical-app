@@ -38,6 +38,7 @@ dependencies:
   share:
   shared_preferences:
   url_launcher:
+  flutter_svg:
   path_provider:
   get_it:
   file_picker:
@@ -97,6 +98,7 @@ flutter:
     - assets/biblia/aa.json
     - assets/biblia/nvi.json
     - assets/biblia/acf.json
+    - assets/login.svg
     - assets/.env
 
     - fonts/

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:new_pib_app/main.dart';
-import 'package:new_pib_app/models/User.dart';
+import 'package:new_pib_app/models/token.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -30,12 +30,18 @@ class Network {
         }),
         headers: setHeaders());
     var responseToken = jsonDecode(response.body);
+    print(responseToken);
     if (responseToken['error'] == null) {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.setString(
-          'access_token', json.encode(responseToken['access_token']));
-      localStorage.setString(
-          'refresh_token', json.encode(responseToken['refresh_token']));
+
+    if( getIt.isRegistered<Token>()){
+      getIt<Token>().updateData( responseToken['access_token'],  responseToken['refresh_token'], DateTime.now().add(Duration(seconds: responseToken['expires_in'])));
+    }else{
+      getIt.registerSingleton(Token(accessToken: responseToken['access_token'],refreshToken:  responseToken['refresh_token'],validUntil:  DateTime.now().add(Duration(seconds: responseToken['expires_in']))));
+    }
+      localStorage.setString('access_token',responseToken['access_token'] ) ;
+      localStorage.setString('refresh_token', responseToken['refresh_token']) ;
+      localStorage.setString('valid_until', DateTime.now().add(Duration(seconds: responseToken['expires_in'])).toString()) ;
       return responseToken['access_token'];
     }
     return false;
@@ -59,12 +65,15 @@ class Network {
         headers: setHeaders());
     var responseToken = jsonDecode(response.body);
     if (responseToken['error'] == null) {
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      getIt<UserCustom>().setAcessToken(responseToken['access_token']);
-      localStorage.setString(
-          'access_token', json.encode(responseToken['access_token']));
-      localStorage.setString(
-          'refresh_token', json.encode(responseToken['refresh_token']));
+
+      if( getIt.isRegistered<Token>()){
+        getIt<Token>().updateData( responseToken['access_token'],  responseToken['refresh_token'], DateTime.now().add(Duration(seconds: responseToken['expires_in'])));
+      }else{
+        getIt.registerSingleton(Token(accessToken: responseToken['access_token'],refreshToken:  responseToken['refresh_token'],validUntil:  DateTime.now().add(Duration(seconds: responseToken['expires_in']))));
+      }
+      localStorage.setString('access_token',responseToken['access_token'] ) ;
+      localStorage.setString('refresh_token', responseToken['refresh_token']) ;
+      localStorage.setString('valid_until', DateTime.now().add(Duration(seconds: responseToken['expires_in'])).toString()) ;
       return true;
     }
     return false;

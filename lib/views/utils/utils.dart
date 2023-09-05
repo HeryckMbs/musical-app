@@ -1,27 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:new_pib_app/controllers/ChurchController.dart';
-import 'package:new_pib_app/controllers/DepartmentController.dart';
-import 'package:new_pib_app/models/Departamento.dart';
-import 'package:new_pib_app/models/User.dart';
-import 'package:new_pib_app/models/igreja.dart';
-import 'package:new_pib_app/views/homePage/home.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../main.dart';
-import '../church/DetailChurch.dart';
-import '../church/ListChurch.dart';
-import '../department/ListDepartment.dart';
 
-// import 'package:pibfin/main.dart';
-
-class ColorsWhiteTheme {
-  static Color homeColor = const Color(0xFFFAFAFA);
-  static Color pibTheme = const Color.fromRGBO(255, 224, 12, 10);
-  static Color cardColor = const Color(0xFFFFD54F);
-  static Color cardColor2 = const Color(0xFF262425);
+class StandardTheme {
+  static Color homeColor = const Color(0xFF0f3870);
+  static Color disabledPrimary = const Color(0xFFd8e3f5);
+  static Color cardColor = const Color(0xFFfed428);
+  // static Color cardColor = const Color(0xFFFFD54F);
+  static Color badge = const Color(0xFF13171c);
+  static Color cardColor2 = const Color(0xFFfff9fc);
+  // static Color cardColor2 = const Color(0xFF262425);
   static Color fontColor = const Color.fromRGBO(0, 0, 0, 10);
 }
 
@@ -32,128 +24,6 @@ class ColorsDarkTheme {
   static Color fontColor = const Color.fromRGBO(255, 255, 255, 10);
 }
 
-class CifrasIndexPage extends StatefulWidget {
-  CifrasIndexPage(
-      {super.key,
-      required this.searchble,
-      required this.cifra,
-      this.path,
-      required this.isLoadingPage,
-      required this.updatePage,
-      required this.parentContext});
-
-  final bool searchble;
-  final Function updatePage;
-  final List<Function> isLoadingPage;
-  final BuildContext parentContext;
-  final path;
-  final List<dynamic> cifra;
-
-  @override
-  State<CifrasIndexPage> createState() => _CifrasIndexPageState();
-}
-
-/**
- * {cifras: [{'nome':'','fullPathStorage':''},{},{}]}
- *
- */
-class _CifrasIndexPageState extends State<CifrasIndexPage> {
-  List<dynamic>? cifrasFiltradas = [];
-  final controller = ScrollController();
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    cifrasFiltradas = widget.cifra;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.cifra.isEmpty) {
-      return const NotFoundCifras();
-    } else {
-      return isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Container(
-              color: const Color(0xFF131112),
-              child: Column(
-                children: [
-                  widget.searchble
-                      ? Container(
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(40)),
-                          ),
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TextField(
-                              onChanged: (value) {
-                                // setState(() {
-                                //   cifrasFiltradas = List.from(widget.cifra)
-                                //       .where((element) => element.nome
-                                //           .toLowerCase()
-                                //           .contains(value.toLowerCase()))
-                                //       .cast<CifrasModel>()
-                                //       .toList();
-                                // });
-                              },
-                              decoration:
-                                  DecorationVariables.inputPesquisaDecoration),
-                        )
-                      : Container(),
-                  GridView.builder(
-                    padding: const EdgeInsets.all(10),
-                    physics: const ScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5),
-                    itemCount: cifrasFiltradas!.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () async {
-                          // if (cifrasFiltradas![index].fileExist) {
-                          //   await PdfController.displayPdf(
-                          //     widget.parentContext,
-                          //     cifrasFiltradas![index].nome!,
-                          //     cifrasFiltradas![index].nome!,
-                          //   );
-                          // } else {
-                          //   widget.isLoadingPage[0]();
-                          //   Uint8List? pdfData =
-                          //       await CifraController.readCifra(
-                          //           cifrasFiltradas![index].fullPath);
-                          //   // ignore: use_build_context_synchronously
-                          //   await PdfController.displayPdfMemory(
-                          //       widget.parentContext,
-                          //       pdfData!,
-                          //       cifrasFiltradas![index].nome);
-                          //   widget.isLoadingPage[1]();
-                          // }
-                        },
-                        child: PdfCard(
-                          updatePage: widget.updatePage,
-                          path: widget.path ?? '',
-                          parentContext: context,
-                          // cifra: cifrasFiltradas![index],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            );
-    }
-  }
-}
 
 class NotFoundCifras extends StatelessWidget {
   const NotFoundCifras({
@@ -172,7 +42,7 @@ class NotFoundCifras extends StatelessWidget {
               style: TextStyle(
                   fontSize: 20,
                   fontStyle: FontStyle.italic,
-                  color: Colors.grey),
+                  color: Colors.white),
               'Ops! Não foram encontradas cifras para esta pasta...Tente cadastrar uma :)'),
         ]),
       ),
@@ -180,254 +50,27 @@ class NotFoundCifras extends StatelessWidget {
   }
 }
 
-class PdfCard extends StatefulWidget {
-  const PdfCard({
+class NotFound extends StatelessWidget {
+  NotFound({
     super.key,
-    // required this.cifra,
-    required this.parentContext,
-    required this.updatePage,
-    required this.path,
+    required this.texto,
   });
-
-  // final CifrasModel cifra;
-  final Function updatePage;
-  final String path;
-  final BuildContext parentContext;
-
-  @override
-  State<PdfCard> createState() => _PdfCardState();
-}
-
-class _PdfCardState extends State<PdfCard> {
-  var isDownloaded;
-  bool _isLoading = false;
-
-  void download() {
-    setState(() {
-      isDownloaded = true;
-    });
-  }
-
-  void delete() {
-    setState(() {
-      isDownloaded = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
+  String texto;
   @override
   Widget build(BuildContext context) {
-    downloadPdf() async {
-      // setState(() {
-      //   _isLoading = true;
-      // });
-      // var pdf = await CifraController.downloadCifra(
-      //     widget.cifra!.fullPath, widget.cifra!.nome + ".pdf");
-      // download();
-      // widget.cifra?.fileExist = pdf != null;
-      // setState(() {
-      //   _isLoading = false;
-      // });
-    }
-
-    deletePdf() async {
-      // bool deleted = await CifraController.deletePdfInternalStorage(
-      //     widget.cifra!.nome + ".pdf");
-      // if (deleted) {
-      //   delete();
-      //   widget.cifra?.fileExist = false;
-      // } else {
-      //   // ignore: use_build_context_synchronously
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(
-      //       content: Text('Não foi possível excluir o arquivo'),
-      //       backgroundColor: Colors.redAccent,
-      //     ),
-      //   );
-      // }
-    }
-
-    deletePdfPasta() async {
-      // setState(() {
-      //   _isLoading = true;
-      // });
-
-      // if (widget.path != '') {
-      //   await PastaController.deleteCifraPasta(
-      //       widget.cifra!.nome, widget.cifra.fullPath, widget.path);
-      // } else {
-      //   await CifraController.deleteCifraPastaStorage(widget.cifra.fullPath);
-      // }
-      // await widget.updatePage();
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(
-      //     elevation: 2000,
-      //     duration: Duration(seconds: 5),
-      //     content: Row(children: [
-      //       Padding(
-      //         padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-      //         child: Icon(
-      //           Icons.done,
-      //           color: Colors.white,
-      //         ),
-      //       ),
-      //       Expanded(
-      //         child: Text(
-      //             'Que pena, essa música era tão legal... Mas foi excluída com sucesso!'),
-      //       )
-      //     ]),
-      //     backgroundColor: Colors.green,
-      //   ),
-      // );
-      // setState(() {
-      //   _isLoading = false;
-      // });
-    }
-
-    // isDownloaded = widget.cifra!.fileExist;
-
-    return _isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : Container(
-            child: Stack(
-              alignment: Alignment.topLeft,
-              children: [
-                CifraCard(
-                  filename: 'resa',
-                  // filename: widget.cifra.nome,
-                  isDownloaded: isDownloaded,
-                ),
-                DownloadButton(
-                    updatePage: widget.updatePage,
-                    isDownloaded: isDownloaded,
-                    deletePdfPasta: deletePdfPasta,
-                    downloadPdf: downloadPdf)
-              ],
-            ),
-          );
-  }
-}
-
-class CifraCard extends StatelessWidget {
-  CifraCard({super.key, required this.filename, required this.isDownloaded});
-
-  final filename;
-  bool isDownloaded;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isDownloaded
-                ? const Color.fromRGBO(129, 199, 132, 1)
-                : Colors.transparent,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Image.asset('assets/not-found.png'),
+          Text(
+            texto,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontSize: 20, fontStyle: FontStyle.italic, color: Colors.white),
           ),
-          color: ColorsWhiteTheme.cardColor2,
-          borderRadius: const BorderRadius.all(
-              // left: Radius.circular(30)
-              Radius.circular(10)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon(
-            //   Icons.my_library_music_outlined,
-            //   size: 30,
-            //   color: ColorsWhiteTheme.fontColor,
-            // ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: Text(
-                ' $filename',
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
+        ]),
       ),
-    );
-  }
-}
-
-class DownloadButton extends StatefulWidget {
-  const DownloadButton(
-      {super.key,
-      required this.isDownloaded,
-      required this.deletePdfPasta,
-      required this.updatePage,
-      required this.downloadPdf});
-
-  final downloadPdf;
-  final deletePdfPasta;
-  final Function updatePage;
-  final bool isDownloaded;
-
-  @override
-  State<DownloadButton> createState() => _DownloadButtonState();
-}
-
-class _DownloadButtonState extends State<DownloadButton> {
-  bool _isDownloaded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    setState(() {
-      _isDownloaded = widget.isDownloaded;
-    });
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.04,
-          width: MediaQuery.of(context).size.width * 0.1,
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              color: _isDownloaded ? Colors.green[300] : Colors.blueGrey[100],
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10))),
-          child: Icon(
-            _isDownloaded ? Icons.download_done : Icons.cloud_download_outlined,
-          ),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.04,
-          width: MediaQuery.of(context).size.width * 0.1,
-          margin: const EdgeInsets.all(5),
-          child: PopupMenuButton(
-            tooltip: 'Opções',
-            icon: const Icon(Icons.more_vert_rounded),
-            iconSize: MediaQuery.of(context).size.width * 0.06,
-            onSelected: (item) async {
-              await item();
-            },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<Function>(
-                value: widget.downloadPdf,
-                child: const Text('Baixar Cifra'),
-              ),
-              PopupMenuItem<Function>(
-                value: widget.deletePdfPasta,
-                child: const Text('Excluir cifra da pasta'),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -435,43 +78,22 @@ class _DownloadButtonState extends State<DownloadButton> {
 void showDialogue(BuildContext context) {
   showDialog(
     barrierDismissible: false,
+    useSafeArea: true,
     context: context,
     builder: (BuildContext context) => Center(
-        // /RefreshProgressIndicator()
-        // child: CircularProgressIndicator(color: Color(0xFFFFD54F),semanticsLabel: 'Carregando',semanticsValue: 'Carregando',)),
+      // /RefreshProgressIndicator()
+      // child: CircularProgressIndicator(color: Color(0xFFFFD54F),semanticsLabel: 'Carregando',semanticsValue: 'Carregando',)),
         child: RefreshProgressIndicator(
-      color: const Color(0xFFFFD54F),
-      backgroundColor: ColorsWhiteTheme.cardColor2,
-    )),
-  );
-}
-
-void messageToUser(
-    BuildContext context, String message, Color color, IconData icon) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      elevation: 2000,
-      content: Row(children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-          child: Icon(
-            icon,
-            color: Colors.white,
-          ),
-        ),
-        Expanded(
-          child: Text(message),
-        )
-      ]),
-      backgroundColor: color,
-    ),
+          color: const Color(0xFFFFD54F),
+          backgroundColor: StandardTheme.cardColor2,
+        )),
   );
 }
 
 void hideProgressDialogue(BuildContext context) {
   Navigator.of(context).pop(RefreshProgressIndicator(
     color: const Color(0xFFFFD54F),
-    backgroundColor: ColorsWhiteTheme.cardColor2,
+    backgroundColor: StandardTheme.cardColor2,
   ));
 }
 
@@ -486,7 +108,7 @@ class CardConteudo extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-          color: ColorsWhiteTheme.cardColor2,
+          color: StandardTheme.cardColor2,
           borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -499,7 +121,7 @@ class CardConteudo extends StatelessWidget {
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                      color: Colors.grey,
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
@@ -507,7 +129,7 @@ class CardConteudo extends StatelessWidget {
             ),
             Text(
               texto,
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.white),
             )
           ],
         ),
@@ -519,10 +141,10 @@ class CardConteudo extends StatelessWidget {
 class CardAcoes extends StatelessWidget {
   const CardAcoes(
       {super.key,
-      required this.title,
-      required this.icone,
-      this.fontColor,
-      required this.iconColor});
+        required this.title,
+        required this.icone,
+        this.fontColor,
+        required this.iconColor});
 
   final String title;
   final icone;
@@ -534,7 +156,7 @@ class CardAcoes extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-          color: ColorsWhiteTheme.cardColor2,
+          color: StandardTheme.cardColor2,
           borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -543,19 +165,19 @@ class CardAcoes extends StatelessWidget {
           children: [
             icone != null
                 ? Icon(
-                    icone,
-                    color: ColorsWhiteTheme.cardColor,
-                    size: 40,
-                  )
+              icone,
+              color: iconColor,
+              size: 40,
+            )
                 : Container(),
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: fontColor != null ? fontColor : Colors.grey,
+                  color: fontColor != null ? fontColor : Colors.white,
                   fontSize: icone != null ? 16 : 16,
                   fontWeight:
-                      icone != null ? FontWeight.normal : FontWeight.bold),
+                  icone != null ? FontWeight.normal : FontWeight.bold),
             )
           ],
         ),
@@ -567,21 +189,25 @@ class CardAcoes extends StatelessWidget {
 class Input extends StatelessWidget {
   Input(
       {super.key,
-      this.controller,
-      required this.nome,
-      required this.icon,
-      required this.password,
-      this.height,
-      this.constLines,
-      this.dica,
-      this.action,
-      required this.validate,
-      required this.onChange,
-      required this.onTap});
+        this.controller,
+        required this.nome,
+        required this.icon,
+        required this.password,
+        this.height,
+        this.constLines,
+        this.dica,
+        this.dark,
+        this.action,
+        required this.validate,
+        required this.onChange,
+        this.enabled,
+        required this.onTap});
 
   final TextEditingController? controller;
   final nome;
   final icon;
+  bool? enabled;
+  bool? dark;
   final Function validate;
   final String? dica;
   final double? height;
@@ -593,54 +219,56 @@ class Input extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color colorText= dark != null && dark! == true ? Colors.black :Colors.white;
     return Container(
-      margin: const EdgeInsets.all(5),
       child: TextFormField(
         textInputAction: action ?? TextInputAction.done,
-        style: const TextStyle(color: Colors.grey),
+        style:  TextStyle(color:Colors.black),
         onChanged: (value) async {
-          onChange(value);
+          onChange!(value) ?? print('ruim');
         },
         obscureText: password,
         controller: controller,
         cursorHeight: 30,
-        cursorColor: Colors.grey,
+        enabled: enabled,
+        cursorColor: Colors.black,
         maxLines: constLines ?? 1,
         decoration: InputDecoration(
+
           contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-          helperStyle: const TextStyle(color: Colors.grey),
-          hintStyle: TextStyle(height: height ?? 1, color: Colors.grey),
+          helperStyle:  TextStyle(color: colorText),
+          hintStyle: TextStyle(height: height ?? 1, color: colorText),
           alignLabelWithHint: true,
           errorStyle: const TextStyle(fontWeight: FontWeight.bold),
           focusedErrorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: Colors.red)),
           floatingLabelAlignment: FloatingLabelAlignment.start,
           enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           errorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: Colors.red)),
           labelText: nome,
-          floatingLabelStyle: const TextStyle(
-            color: Colors.white,
+          floatingLabelStyle:  TextStyle(
+            color: Colors.black,
             fontSize: 18,
           ),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          labelStyle: const TextStyle(color: Colors.white60),
+          labelStyle:  TextStyle(color: Colors.black),
           focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(
                 style: BorderStyle.solid,
                 width: 3,
-                color: ColorsWhiteTheme.cardColor,
+                color: dark != null && dark! == true ? Colors.white: StandardTheme.homeColor,
               )),
           filled: true,
-          fillColor: ColorsWhiteTheme.cardColor2,
+          fillColor: Color(0xFFfff9fc),
         ),
         validator: (value) {
           return validate(value);
@@ -653,11 +281,11 @@ class Input extends StatelessWidget {
 class InputDate extends StatelessWidget {
   InputDate(
       {super.key,
-      required this.controller,
-      required this.nome,
-      required this.icon,
-      required this.password,
-      required this.onTap});
+        required this.controller,
+        required this.nome,
+        required this.icon,
+        required this.password,
+        required this.onTap});
 
   final TextEditingController controller;
   final nome;
@@ -676,12 +304,40 @@ class InputDate extends StatelessWidget {
         onTap: () {
           onTap();
         },
-        style: const TextStyle(color: Colors.grey),
+        style: const TextStyle(color: Colors.white),
         obscureText: password,
         controller: controller,
         showCursor: false,
         readOnly: true,
-        decoration: DecorationVariables.decorationInput(nome)
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
+          hintText: nome,
+          helperText: nome,
+          helperStyle: const TextStyle(color: Colors.white),
+          hintStyle: const TextStyle(color: Colors.white),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(
+              color: Colors.black,
+            ),
+          ),
+          prefixIcon: Icon(
+            icon,
+            color: const Color.fromRGBO(248, 213, 0, 1),
+          ),
+          focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderSide: BorderSide(
+                color: Colors.black,
+              )),
+          filled: true,
+          fillColor: StandardTheme.cardColor2,
+          hoverColor: Colors.black,
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+          ),
+        ),
       ),
     );
   }
@@ -690,13 +346,15 @@ class InputDate extends StatelessWidget {
 class ElevatedButtonCustom extends StatelessWidget {
   const ElevatedButtonCustom(
       {super.key,
-      required this.onPressed,
-      required this.name,
-      this.colorText,
-      this.icon,
-      required this.color});
+        required this.onPressed,
+        required this.name,
+        this.colorText,
+        this.full,
+        this.icon,
+        required this.color});
 
   final Function onPressed;
+  final bool? full;
   final String name;
   final IconData? icon;
   final Color color;
@@ -708,7 +366,7 @@ class ElevatedButtonCustom extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         // ignore: prefer_if_null_operators
         backgroundColor:
-            color != null ? color : const Color.fromRGBO(248, 213, 0, 1),
+        color != null ? color : StandardTheme.cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
@@ -717,17 +375,16 @@ class ElevatedButtonCustom extends StatelessWidget {
         onPressed();
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * 0.03, vertical: 20),
+        padding: EdgeInsets.symmetric(vertical: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: full != null ? MainAxisSize.max : MainAxisSize.min,
           children: [
             icon != null
                 ? Icon(
-                    icon,
-                    color: colorText ?? Colors.black,
-                  )
+              icon,
+              color: colorText ?? Colors.black,
+            )
                 : Container(),
             Text(
               name,
@@ -740,57 +397,52 @@ class ElevatedButtonCustom extends StatelessWidget {
   }
 }
 
+class OfflineBar extends StatelessWidget {
+  const OfflineBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: const Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Icon(
+              Icons.wifi_off,
+              color: Colors.white,
+            ),
+          ),
+          Text(
+            'Modo offline ativado',
+            style: TextStyle(
+              fontSize: 17,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class DecorationVariables {
-  static InputDecoration inputPesquisaDecoration = const InputDecoration(
-    contentPadding: EdgeInsets.all(20),
+  static InputDecoration inputPesquisaDecoration =  InputDecoration(
+    contentPadding: const EdgeInsets.all(20),
     filled: true,
-    fillColor: Color(0xFF262425),
+    fillColor: StandardTheme.badge,
     hintText: 'Pesquisa',
-    hintStyle: TextStyle(color: Colors.grey),
-    suffixIcon: Icon(Icons.search, color: Colors.grey),
-    border: OutlineInputBorder(
+    hintStyle: const TextStyle(color: Colors.white),
+    suffixIcon: const Icon(Icons.search, color: Colors.white),
+    border: const OutlineInputBorder(
       borderSide: BorderSide.none,
       borderRadius: BorderRadius.all(Radius.circular(40)),
     ),
   );
-
-  static InputDecoration decorationInput(String label) {
-    return InputDecoration(
-      contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-      helperStyle: const TextStyle(color: Colors.grey),
-      alignLabelWithHint: true,
-      errorStyle: const TextStyle(fontWeight: FontWeight.bold),
-      focusedErrorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          borderSide: BorderSide(color: Colors.red)),
-      floatingLabelAlignment: FloatingLabelAlignment.start,
-      enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-      ),
-      border: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-      ),
-      errorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          borderSide: BorderSide(color: Colors.red)),
-      labelText: label,
-      floatingLabelStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 18,
-      ),
-      floatingLabelBehavior: FloatingLabelBehavior.always,
-      labelStyle: const TextStyle(color: Colors.white60),
-      focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          borderSide: BorderSide(
-            style: BorderStyle.solid,
-            width: 3,
-            color: Color(0xFFFFD54F),
-          )),
-      filled: true,
-      fillColor: const Color(0xFF262425),
-    );
-  }
 }
 
 class ActionButton extends StatelessWidget {
@@ -815,7 +467,7 @@ class ActionButton extends StatelessWidget {
         padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-            color: ColorsWhiteTheme.cardColor2,
+            color: StandardTheme.cardColor2,
             borderRadius: const BorderRadius.all(Radius.circular(100))),
         child: Icon(icon, color: iconColor),
       ),
@@ -845,21 +497,19 @@ Future<DateTime?> showDateTimePicker({
   if (!context.mounted) return selectedDate;
 
   final TimeOfDay? selectedTime = await showTimePicker(
-
     context: context,
     initialTime: TimeOfDay.fromDateTime(selectedDate),
-
   );
 
   return selectedTime == null
       ? selectedDate
       : DateTime(
-          selectedDate.year,
-          selectedDate.month,
-          selectedDate.day,
-          selectedTime.hour,
-          selectedTime.minute,
-        );
+    selectedDate.year,
+    selectedDate.month,
+    selectedDate.day,
+    selectedTime.hour,
+    selectedTime.minute,
+  );
 }
 
 class CustomTag extends StatefulWidget {
@@ -927,7 +577,7 @@ class _BottomBarState extends State<BottomBar> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.08,
-      decoration: const BoxDecoration(color: Color(0xFF312F30)),
+      decoration: BoxDecoration(color: StandardTheme.homeColor),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -936,228 +586,245 @@ class _BottomBarState extends State<BottomBar> {
           children: [
             InkWell(
               onTap: () async {
-                // if (widget.selecionado != 'home') {
-                //   setState(() {
-                //     widget.selecionado = 'home';
-                //   });
-                //   var eventos = await EventoController.getEventsByWeek(
-                //       getIt<UserCustom>().ministerioSelecionado);
-                //   List<Aviso> avisos =
-                //       await AvisoController.getAvisosByMinisterioLimited(
-                //           getIt<UserCustom>().ministerioSelecionado);
-                //   // List<Pedido> pedidos = await PedidosController.getPedidos(getIt<UserCustom>().ministerioSelecionado);
-                //   List<Pedido> pedidos = await PedidosController.getPedidos(
-                //       getIt<UserCustom>().ministerioSelecionado);
+                if (widget.selecionado != 'home') {
 
-                //   // ignore: use_build_context_synchronously
-                await Navigator.pushAndRemoveUntil(
-                    context,
-                    PageTransition(
-                        child: Home(),
-                        type: PageTransitionType.fade,
-                        duration: const Duration(milliseconds: 150)),
-                    ModalRoute.withName('/'));
-                // }
+                  showDialogue(context);
+
+                  // ignore: use_build_context_synchronously
+                  // await Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     PageTransition(
+                  //       child: ModernPage(
+                  //         pedidos: pedidos,
+                  //         eventos: eventos,
+                  //         avisos: avisos,
+                  //       ),
+                  //       type: PageTransitionType.fade,
+                  //       duration: const Duration(milliseconds: 450),
+                  //       reverseDuration: const Duration(milliseconds: 450),
+                  //     ),
+                  //     ModalRoute.withName('/'));
+                  hideProgressDialogue(context);
+                  setState(() {
+                    widget.selecionado = 'home';
+                  });
+                }
               },
-              child: Column(
-                children: [
-                  Icon(Icons.home,
-                      color: widget.selecionado == 'home'
-                          ? Colors.amber[400]
-                          : Colors.grey),
-                  Expanded(
-                    child: Text('Home',
+              child: Container(
+                decoration: BoxDecoration(
+                    color: widget.selecionado == 'home' ? StandardTheme.badge : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(20))),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(Icons.home,
+                          color: widget.selecionado == 'home'
+                              ? Colors.amber[400]
+                              : Colors.white),
+                    ),
+                    Text(  widget.selecionado == 'home' ?'Home': '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'home'
                                 ? Colors.amber[400]
-                                : Colors.grey)),
-                  )
-                ],
+                                : Colors.white))
+                  ],
+                ),
               ),
             ),
             InkWell(
               onTap: () async {
-                // if (widget.selecionado != 'event') {
-                //   setState(() {
-                //     widget.selecionado = 'event';
-                //   });
-                //   print(widget.idMinisterio);
-                //   var eventos = await EventoController.getEvents(
-                //       getIt<UserCustom>().ministerioSelecionado);
-                //   // ignore: use_build_context_synchronously
-                //   Navigator.pushAndRemoveUntil(
-                //       context,
-                //       PageTransition(
-                //           child: EventsIndex(
-                //             eventos: eventos,
-                //           ),
-                //           type: PageTransitionType.fade,
-                //           duration: Duration(milliseconds: 150)),
-                //       ModalRoute.withName('/'));
-                // }
-              },
-              child: Column(
-                children: [
-                  Icon(Icons.calendar_month,
-                      color: widget.selecionado == 'programation'
-                          ? Colors.amber[400]
-                          : Colors.grey),
-                  Expanded(
-                    child: Text('Programções',
-                        style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.035,
-                            color: widget.selecionado == 'programation'
-                                ? Colors.amber[400]
-                                : Colors.grey)),
-                  ),
-                ],
-              ),
-            ),
-            // InkWell(
-            //   onTap: () async {
-            //     // if (widget.selecionado != 'music') {
-            //     //   setState(() {
-            //     //     widget.selecionado = 'music';
-            //     //   });
-            //     //   // ignore: use_build_context_synchronously
-            //     //   Navigator.pushAndRemoveUntil(
-            //     //       context,
-            //     //       PageTransition(
-            //     //           child: MusicMenuIndex(),
-            //     //           type: PageTransitionType.fade,
-            //     //           duration: Duration(milliseconds: 150)),
-            //     //       ModalRoute.withName('/'));
-            //     // }
-            //   },
-            //   child: Column(
-            //     children: [
-            //       Icon(Icons.music_note,
-            //           color: widget.selecionado == 'music'
-            //               ? Colors.amber[400]
-            //               : Colors.grey),
-            //       Expanded(
-            //         child: Text('Músicas',
-            //             style: TextStyle(
-            //                 fontSize: MediaQuery.of(context).size.width * 0.035,
-            //                 color: widget.selecionado == 'music'
-            //                     ? Colors.amber[400]
-            //                     : Colors.grey)),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            // InkWell(
-            //   onTap: () async {
-            //     if (widget.selecionado != 'department') {
-            //       setState(() {
-            //         widget.selecionado = 'department';
-            //       });
-            //       showDialogue(context);
-            //       List<Departamento> departamentos =
-            //           await DepartmentController.getDepartmentsOfChurch(
-            //               getIt<UserCustom>().igreja_selecionada!);
-            //       await Navigator.pushAndRemoveUntil(
-            //           context,
-            //           PageTransition(
-            //               child: DepartmentList(
-            //                 departamentos: departamentos,
-            //               ),
-            //               type: PageTransitionType.fade,
-            //               duration: Duration(milliseconds: 200)),
-            //           ModalRoute.withName('/'));
-            //       // hideProgressDialogue(context);
-            //     }
-            //   },
-            //   child: Column(
-            //     children: [
-            //       Icon(Icons.groups_rounded,
-            //           color: widget.selecionado == 'department'
-            //               ? Colors.amber[400]
-            //               : Colors.grey),
-            //       Expanded(
-            //         child: Text('Departamento',
-            //             style: TextStyle(
-            //                 fontSize: MediaQuery.of(context).size.width * 0.035,
-            //                 color: widget.selecionado == 'department'
-            //                     ? Colors.amber[400]
-            //                     : Colors.grey)),
-            //       )
-            //     ],
-            //   ),
-            // ),
-            InkWell(
-              onTap: () async {
-                if (widget.selecionado != 'department') {
-                  setState(() {
-                    widget.selecionado = 'department';
-                  });
+                if (widget.selecionado != 'event') {
+
                   showDialogue(context);
-                  Igreja igreja = await ChurchController.getChurch(
-                      getIt<UserCustom>().igreja_selecionada!);
-                  await Navigator.pushAndRemoveUntil(
-                      context,
-                      PageTransition(
-                          child: DetailIgreja(
-                            igreja: igreja,
-                          ),
-                          type: PageTransitionType.fade,
-                          duration: const Duration(milliseconds: 200)),
-                      ModalRoute.withName('/'));
-                  // hideProgressDialogue(context);
+                  // var eventos = await EventoController.getEvents(
+                  //     getIt<UserCustom>().ministerioSelecionado);
+                  // // ignore: use_build_context_synchronously
+                  // await Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     PageTransition(
+                  //         child: EventsIndex(
+                  //           eventos: eventos,
+                  //         ),
+                  //         type: PageTransitionType.fade,
+                  //         duration: const Duration(milliseconds: 450),
+                  //         reverseDuration: const Duration(milliseconds: 450)
+                  //     ),
+                  //     ModalRoute.withName('/'));
+
+                  hideProgressDialogue(context);
+                  setState(() {
+                    widget.selecionado = 'event';
+                  });
                 }
               },
-              child: Column(
-                children: [
-                  Icon(Icons.groups_rounded,
-                      color: widget.selecionado == 'department'
-                          ? Colors.amber[400]
-                          : Colors.grey),
-                  Expanded(
-                    child: Text('Igreja',
+              child: Container(
+                decoration: BoxDecoration(
+                    color: widget.selecionado == 'event' ? StandardTheme.badge : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(20))),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(Icons.calendar_month,
+                          color: widget.selecionado == 'event'
+                              ? Colors.amber[400]
+                              : Colors.white),
+                    ),
+                    Text( widget.selecionado == 'event' ? 'Eventos': '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
-                            color: widget.selecionado == 'department'
+                            color: widget.selecionado == 'event'
                                 ? Colors.amber[400]
-                                : Colors.grey)),
-                  )
-                ],
+                                : Colors.white)),
+                  ],
+                ),
               ),
             ),
             InkWell(
               onTap: () async {
-                // if (widget.selecionado != 'profile') {
-                //   setState(() {
-                //     widget.selecionado = 'profile';
-                //   });
-                //   var user = await FirebaseAuth.instance.currentUser;
-                //   Navigator.pushAndRemoveUntil(
-                //       context,
-                //       PageTransition(
-                //           child: ProfileIndex(
-                //             user: user,
-                //           ),
-                //           type: PageTransitionType.fade,
-                //           duration: Duration(milliseconds: 150)),
-                //       ModalRoute.withName('/'));
-                // }
+                if (widget.selecionado != 'music') {
+
+                  showDialogue(context);
+                  // // ignore: use_build_context_synchronously
+                  // await Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     PageTransition(
+                  //         child: MusicMenuIndex(),
+                  //         type: PageTransitionType.fade,
+                  //         duration: const Duration(milliseconds: 450),
+                  //         reverseDuration: const Duration(milliseconds: 450)
+                  //     ),
+                  //     ModalRoute.withName('/'));
+                  // hideProgressDialogue(context);
+                  setState(() {
+                    widget.selecionado = 'music';
+                  });
+                }
               },
-              child: Column(
-                children: [
-                  Icon(Icons.person,
-                      color: widget.selecionado == 'profile'
-                          ? Colors.amber[400]
-                          : Colors.grey),
-                  Expanded(
-                    child: Text('Perfil',
+              child: Container(
+                decoration: BoxDecoration(
+                    color: widget.selecionado == 'music' ? StandardTheme.badge : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(20))),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(Icons.music_note,
+                          color: widget.selecionado == 'music'
+                              ? Colors.amber[400]
+                              : Colors.white),
+                    ),
+                    Text( widget.selecionado == 'music'  ? 'Músicas' : '',
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * 0.035,
+                            color: widget.selecionado == 'music'
+                                ? Colors.amber[400]
+                                : Colors.white))
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () async {
+                if (widget.selecionado != 'integrante') {
+
+                  showDialogue(context);
+                  // Ministerio? ministerio =
+                  // await MinisterioController.getMinisterioById(
+                  //     getIt<UserCustom>().ministerioSelecionado);
+                  // await Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     PageTransition(
+                  //         child: MinisterioIndex(
+                  //           ministerio: ministerio!,
+                  //         ),
+                  //         type: PageTransitionType.fade,
+                  //         duration: const Duration(milliseconds: 450),
+                  //         reverseDuration: const Duration(milliseconds: 450)
+                  //     ),
+                  //     ModalRoute.withName('/'));
+                  hideProgressDialogue(context);
+                  setState(() {
+                    widget.selecionado = 'integrante';
+                  });
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    color: widget.selecionado == 'integrante' ? StandardTheme.badge : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(20))),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(Icons.people,
+                          color: widget.selecionado == 'integrante'
+                              ? Colors.amber[400]
+                              : Colors.white),
+                    ),
+                    Text(widget.selecionado == 'integrante' ? 'Ministério': '',
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width * 0.035,
+                            color: widget.selecionado == 'integrante'
+                                ? Colors.amber[400]
+                                : Colors.white))
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () async {
+                if (widget.selecionado != 'profile') {
+
+                  showDialogue(context);
+                  // var user = await FirebaseAuth.instance.currentUser;
+                  // await Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     PageTransition(
+                  //         child: ProfileIndex(
+                  //           user: user,
+                  //         ),
+                  //         type: PageTransitionType.fade,
+                  //         duration: const Duration(milliseconds: 450),
+                  //         reverseDuration: const Duration(milliseconds: 450)
+                  //     ),
+                  //     ModalRoute.withName('/'));
+                  hideProgressDialogue(context);
+                  setState(() {
+                    widget.selecionado = 'profile';
+                  });
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    color: widget.selecionado == 'profile' ? StandardTheme.badge : Colors.transparent,
+                    borderRadius: const BorderRadius.all(Radius.circular(20))),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(Icons.person,
+                          color: widget.selecionado == 'profile'
+                              ? Colors.amber[400]
+                              : Colors.white),
+                    ),
+                    Text(widget.selecionado == 'profile' ? 'Perfil': '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             overflow: TextOverflow.fade,
                             color: widget.selecionado == 'profile'
                                 ? Colors.amber[400]
-                                : Colors.grey)),
-                  )
-                ],
+                                : Colors.white))
+                  ],
+                ),
               ),
             ),
           ],
@@ -1179,9 +846,9 @@ class HeaderHomePage extends StatelessWidget {
       margin: EdgeInsets.only(
           top: MediaQuery.of(context).size.height * 0.05, left: 10, right: 10),
       decoration: BoxDecoration(
-        color: ColorsWhiteTheme.cardColor,
+        color: StandardTheme.cardColor,
         borderRadius: const BorderRadius.all(
-            // left: Radius.circular(30)
+          // left: Radius.circular(30)
             Radius.circular(20)),
       ),
       width: MediaQuery.of(context).size.width,
@@ -1190,20 +857,20 @@ class HeaderHomePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Seja bem vindo,", style: TextStyle()),
+                  const Text("Seja bem vindo,", style: TextStyle()),
                   Row(
                     children: [
-                      Expanded(
-                        child: Text(
-                          "${'Irmão da fé'}",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                      // Expanded(
+                      //   child: Text(
+                      //     "${getIt<UserCustom>().UserAuthenticaded.displayName ?? 'Irmão da fé'}",
+                      //     style: const TextStyle(fontWeight: FontWeight.bold),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
@@ -1223,20 +890,20 @@ class HeaderHomePage extends StatelessWidget {
 }
 
 class HeaderStandard extends StatelessWidget {
-  const HeaderStandard({super.key, required this.title});
+  const HeaderStandard({super.key, required this.title,this.margin});
 
   final String title;
-
+  final EdgeInsets? margin;
   @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.12,
-      margin: EdgeInsets.only(
+      margin: margin ?? EdgeInsets.only(
           top: MediaQuery.of(context).size.height * 0.05, left: 10, right: 10),
       decoration: BoxDecoration(
-        color: ColorsWhiteTheme.cardColor,
+        color: StandardTheme.cardColor,
         borderRadius: const BorderRadius.all(
-            // left: Radius.circular(30)
+          // left: Radius.circular(30)
             Radius.circular(20)),
       ),
       width: MediaQuery.of(context).size.width,
@@ -1270,9 +937,9 @@ class HeaderStandard extends StatelessWidget {
 class DropdownCheckbox extends StatelessWidget {
   DropdownCheckbox(
       {super.key,
-      required this.objetosEncontrados,
-      required this.objetosSelecionados,
-      required this.defaultValue});
+        required this.objetosEncontrados,
+        required this.objetosSelecionados,
+        required this.defaultValue});
 
   List<DropdownMenuItem<Object>> objetosEncontrados;
   var defaultValue;
@@ -1282,26 +949,26 @@ class DropdownCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: ColorsWhiteTheme.cardColor2,
+        color: StandardTheme.cardColor2,
         //background color of dropdown button
         borderRadius: BorderRadius.circular(20),
       ),
       child: Container(
         child: DropdownButton(
           padding: const EdgeInsets.all(5),
-          dropdownColor: ColorsWhiteTheme.cardColor2,
+          dropdownColor: StandardTheme.cardColor2,
           value: defaultValue,
           icon: const Padding(
             padding: EdgeInsets.all(8.0),
             child: Icon(
               Icons.arrow_downward,
-              color: Colors.grey,
+              color: Colors.white,
             ),
           ),
           isExpanded: true,
           underline: Container(),
           onChanged: (value) {},
-          iconEnabledColor: ColorsWhiteTheme.cardColor2,
+          iconEnabledColor: StandardTheme.cardColor2,
           items: objetosEncontrados,
         ),
       ),
@@ -1312,11 +979,11 @@ class DropdownCheckbox extends StatelessWidget {
 class WideCard extends StatelessWidget {
   WideCard(
       {super.key,
-      required this.title,
-      required this.description,
-      this.icon,
-      this.extraDetails,
-      this.actions});
+        required this.title,
+        required this.description,
+        this.icon,
+        this.extraDetails,
+        this.actions});
   List<Widget>? actions;
   List<Widget>? extraDetails;
   IconData? icon;
@@ -1333,7 +1000,7 @@ class WideCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            child: Icon(icon, color: ColorsWhiteTheme.cardColor),
+            child: Icon(icon, color: StandardTheme.cardColor),
           ),
           Expanded(
             child: Column(
@@ -1343,15 +1010,15 @@ class WideCard extends StatelessWidget {
                   title,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      color: Colors.grey,
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
                 description != ''
                     ? Text(
-                        description,
-                        style: const TextStyle(color: Colors.grey),
-                      )
+                  description,
+                  style: const TextStyle(color: Colors.white),
+                )
                     : Container(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1417,14 +1084,14 @@ class _ExternalBottomBarState extends State<ExternalBottomBar> {
                   Icon(Icons.home,
                       color: widget.selecionado == 'home'
                           ? Colors.amber[400]
-                          : Colors.grey),
+                          : Colors.white),
                   Expanded(
                     child: Text('Home',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'home'
                                 ? Colors.amber[400]
-                                : Colors.grey)),
+                                : Colors.white)),
                   )
                 ],
               ),
@@ -1452,14 +1119,14 @@ class _ExternalBottomBarState extends State<ExternalBottomBar> {
                   Icon(Icons.calendar_month,
                       color: widget.selecionado == 'event'
                           ? Colors.amber[400]
-                          : Colors.grey),
+                          : Colors.white),
                   Expanded(
                     child: Text('Eventos',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'event'
                                 ? Colors.amber[400]
-                                : Colors.grey)),
+                                : Colors.white)),
                   ),
                 ],
               ),
@@ -1485,14 +1152,14 @@ class _ExternalBottomBarState extends State<ExternalBottomBar> {
                   Icon(Icons.music_note,
                       color: widget.selecionado == 'music'
                           ? Colors.amber[400]
-                          : Colors.grey),
+                          : Colors.white),
                   Expanded(
                     child: Text('Músicas',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'music'
                                 ? Colors.amber[400]
-                                : Colors.grey)),
+                                : Colors.white)),
                   )
                 ],
               ),
@@ -1502,4 +1169,111 @@ class _ExternalBottomBarState extends State<ExternalBottomBar> {
       ),
     );
   }
+}
+
+// List<Enum> status = [ConnectivityResult.mobile, ConnectivityResult.wifi];
+
+// class Template extends StatefulWidget {
+//   Template(
+//       {super.key,
+//         required this.connectivity,
+//         required this.selecionado,
+//         required this.widgets,
+//         this.actionButton,
+//         required this.bottomBarActivated,
+//         this.title});
+//   final List<Widget> widgets;
+//   final String? title;
+//   bool bottomBarActivated = false;
+//   final Connectivity connectivity;
+//   final String selecionado;
+//   final Widget? actionButton;
+//
+//   @override
+//   State<Template> createState() => _TemplateState();
+// }
+//
+// class _TemplateState extends State<Template> {
+//   bool offline = false;
+//   @override
+//   void initState() {
+//     setConnect();
+//     super.initState();
+//   }
+//
+//   setConnect() async {
+//     var a = await widget.connectivity.checkConnectivity();
+//     setState(() {
+//       offline = !status.contains(a);
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder<ConnectivityResult>(
+//       stream: widget.connectivity.onConnectivityChanged,
+//       builder: (context, snapshot) {
+//         if (snapshot.data != null) {
+//           offline = !status.contains(snapshot.data);
+//         }
+//
+//         return Scaffold(
+//           floatingActionButton: widget.actionButton,
+//           backgroundColor: StandardTheme.homeColor,
+//           bottomNavigationBar: widget.bottomBarActivated
+//               ? BottomBar(
+//             selecionado: widget.selecionado,
+//           )
+//               : null,
+//
+//           bottomSheet: AnimatedContainer(
+//             width: MediaQuery.of(context).size.width,
+//             decoration: BoxDecoration(
+//               color: offline ? Colors.redAccent[200] : Colors.transparent,
+//             ),
+//             height: offline ? 40.0 : 0,
+//             duration: const Duration(milliseconds: 0),
+//             curve: Curves.decelerate,
+//             child: const OfflineBar(),
+//           ),
+//           resizeToAvoidBottomInset: true,
+//           // backgroundColor:  Color.fromRGBO(248, 248, 248, 1),
+//           body: SingleChildScrollView(
+//             child: Column(
+//               children: [
+//                 widget.title != null
+//                     ? HeaderStandard(title: widget.title!)
+//                     : const HeaderHomePage(),
+//                 Column(
+//                   children: widget.widgets,
+//                 )
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
+void messageToUser(
+    BuildContext context, String message, Color color, IconData icon) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      elevation: 2000,
+      content: Row(children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+          child: Icon(
+            icon,
+            color: Colors.white,
+          ),
+        ),
+        Expanded(
+          child: Text(message),
+        )
+      ]),
+      backgroundColor: color,
+    ),
+  );
 }

@@ -1,207 +1,153 @@
-import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/constants.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:new_pib_app/controllers/UserController.dart';
-import 'package:new_pib_app/network/network.dart';
-import 'package:new_pib_app/views/cadastro.dart';
-import 'package:new_pib_app/views/external.dart';
-import 'package:new_pib_app/views/homePage/home.dart';
-import 'package:new_pib_app/views/utils/utils.dart';
+import 'package:new_pib_app/views/Equipe/EscolhaEquipe.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
 
-import '../controllers/ChurchController.dart';
-import '../models/igreja.dart';
-import 'church/ListChurch.dart';
+import 'utils/utils.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  Login({
+    super.key,
+  });
 
   @override
-  _LoginState createState() => _LoginState();
+  State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  bool loading = false;
-  TextEditingController controllerEmail = TextEditingController();
-  TextEditingController controllerPassword = TextEditingController();
-
+  TextEditingController email = new TextEditingController();
+  TextEditingController senha = new TextEditingController();
   @override
   void dispose() {
-    controllerEmail.dispose();
-    controllerPassword.dispose();
+    // Limpa os controladores quando o widget for descartado
+    email.dispose();
+    senha.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
-      resizeToAvoidBottomInset: false, //new line
+      backgroundColor: StandardTheme.homeColor,
       body: Stack(
+        alignment: Alignment.bottomLeft,
         children: [
           Container(
-            height: MediaQuery.of(context).size.height * 0.35,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color.fromRGBO(245, 224, 12, 1),
-                  Color.fromRGBO(255, 184, 0, 1),
-                ],
-              ),
-            ),
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    // widget.title,
-                    width: MediaQuery.of(context).size.width * 0.25,
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    child: Image.asset('assets/logo.png'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height,
-            margin:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.3),
-            padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.025),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-              color: Color(0xFF131112),
-            ),
+            margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).size.height * 0.73),
+            padding: EdgeInsets.symmetric(horizontal: 38),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: const BoxDecoration(),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 30,
+                    weight: 1,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Input(
-                    onTap: () {},
-                    validate: (value) {},
-                    onChange: (value) {},
-                    controller: controllerEmail,
-                    icon: Icons.email,
-                    nome: 'E-mail',
-                    password: false,
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 18.0, horizontal: 0),
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Input(
-                    onTap: () {},
-                    validate: (value) {},
-                    onChange: (value) {},
-                    controller: controllerPassword,
-                    icon: Icons.password,
-                    nome: 'Senha',
-                    password: true,
-                  ),
-                ),
-                Container(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                            child: const Text(
-                              'Ainda não possuí conta? cadastre-se por aqui',
-                              style: TextStyle(
-                                color: Colors.grey,
-                              ),
-                            ),
-                            onTap: () async {
-                              List<Igreja> igrejas =
-                                  await ChurchController.getChurchs();
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      child: Cadastro(igrejas: igrejas),
-                                      type: PageTransitionType.fade));
-                            })
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButtonCustom(
-                          color: ColorsWhiteTheme.cardColor,
-                          name: 'Entrar',
-                          onPressed: () async {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            // showDialogue(context);
-                            bool result = await UserController.login(
-                                controllerEmail.text, controllerPassword.text);
-                                print(result);
-                            if (result == true) {
-                  List<Igreja>churchs = await ChurchController.getChurchs();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      PageTransition(
-                          child: ChurchList(
-                            churchs: churchs,
-                          ),
-                          type: PageTransitionType.fade,
-                          duration: Duration(milliseconds: 150)),
-                      ModalRoute.withName('/'));
-                            } else {
-                              print('object');
-                            }
-                          },
-                        ),
-                        ElevatedButtonCustom(
-                          onPressed: () async {
-                            var cifrasOffline =
-                                await getExternalStorageDirectory();
-                            List<FileSystemEntity> cifras =
-                                cifrasOffline!.listSync();
-                          },
-                          color: ColorsWhiteTheme.cardColor2,
-                          name: 'Modo Offline',
-                        )
-                      ]),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.height * 0.05,
-                      horizontal: MediaQuery.of(context).size.width * 0.07),
-                  child: const Center(
-                    child: Text(
-                      'Louvarei ao Senhor em todo o tempo o seu louvor estará continuamente na minha boca. Salmo 34:1',
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ),
+                )
               ],
             ),
           ),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.80,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))),
+            child: Padding(
+              padding: const EdgeInsets.all(38.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Seja bem vindo de volta!',
+                    style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'É sempre bom ter você aqui! ',
+                  ),
+                  // InputElement(type: )
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 28.0,top: 24),
+                    child: Input(
+                      nome: 'E-mail',
+                      onChange: (value) {},
+                      onTap: () {},
+                      password: false,
+                      validate: (value) {},
+                      icon: null,
+                      action: TextInputAction.next,
+                      controller: email,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 38.0),
+                    child: Input(
+                      onTap: () {},
+                      validate: (value) {},
+                      action: TextInputAction.done,
+                      onChange: (value) {
+
+
+                      },
+                      controller: senha,
+                      icon: Icons.password,
+                      nome: 'Senha',
+                      password: true,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async{
+                      if(email.text.isEmpty && senha.text.isEmpty ){
+                        messageToUser(context, 'Todos os campos são obrigatórios', Colors.red, Icons.dangerous);
+                      }else{
+                        bool result = await UserController.login(email.text, senha.text);
+                        if(result){
+                          Navigator.of(context).push(PageTransition(child: EscolhaEquipe(),type: PageTransitionType.fade));
+                        }
+                      }
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 15),
+                      decoration: BoxDecoration(color: email.text.isEmpty && senha.text.isEmpty ? StandardTheme.disabledPrimary : StandardTheme.homeColor,borderRadius:BorderRadius.all(Radius.circular(10))),
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                      child: Text(
+                        'Login',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 17),
+                      ),
+                    ),
+                  ),
+
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  //   child: Text('Esqueceu sua senha?',style: TextStyle(color: StandardTheme.homeColor,fontWeight: FontWeight.bold,fontSize: 15),),
+                  // )
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
