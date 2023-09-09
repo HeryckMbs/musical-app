@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:new_pib_app/views/Equipe/EscolhaEquipe.dart';
+import 'package:new_pib_app/views/eventos/eventos.dart';
 import 'package:new_pib_app/views/utils/utils.dart';
+import 'package:page_transition/page_transition.dart';
 
+import '../../main.dart';
 import '../Equipe/details.dart';
 
 class Home extends StatefulWidget {
@@ -9,30 +13,27 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _currentIndex = 0;
+  void updatePage(index) {}
 
-  final List<Widget> _screens = [
-    FirstScreen(),
-    SecondScreen(),
-    ThirdScreen(),
-    EquipeIndex()
-  ];
+  @override
+  void initState() {
+    Function refresh = () {
+      setState(() {});
+    };
+    getIt<RouterCustom>().setRefresh(refresh);
+    super.initState();
+  }
 
-  final List<String> titles = [
-    'Tela inicial',
-    'Tela secondária',
-    'Tela terciária',
-    ''
-  ];
+  final List<String> titles = ['Tela inicial', 'Eventos', 'Tela terciária', ''];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
+
       appBar: AppBar(
           backgroundColor: Color(0xFFFAFAFA),
-
-          title: Text(titles[_currentIndex]),
+          title: Text('a'),
           // Botão de hambúrguer
           leading: Builder(
             builder: (context) {
@@ -45,14 +46,20 @@ class _HomeState extends State<Home> {
               );
             },
           )),
-      body: Builder(
-        builder: (context) {
-          return _screens[_currentIndex];
-        },
+      body: SingleChildScrollView(
+        child: Builder(
+          builder: (context) {
+            return getIt<RouterCustom>()
+                .screens[getIt<RouterCustom>().currentIndex]!;
+          },
+        ),
       ),
       bottomNavigationBar: Container(
         height: 60,
-        color: Colors.red,
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage('assets/comum.jpg')),
+          color: Colors.red,
+        ),
         width: MediaQuery.of(context).size.width,
       ),
       // Drawer para o menu de hambúrguer
@@ -73,23 +80,27 @@ class _HomeState extends State<Home> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                      color: _currentIndex == 0
-                          ? StandardTheme.homeColor: Color(0xFFcad8f5),
-                      borderRadius: BorderRadius.all(Radius.circular(15)))
-                   ,
+                  color: getIt<RouterCustom>().currentIndex == 0
+                      ? StandardTheme.homeColor
+                      : StandardTheme.badge,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
               child: ListTile(
                 title: Text(
                   'Home',
                   style: TextStyle(
-                      color: _currentIndex == 0 ? Colors.white : Colors.black),
+                      color: getIt<RouterCustom>().currentIndex == 0
+                          ? Colors.white
+                          : Colors.black),
                 ),
                 leading: Icon(
                   Icons.home_outlined,
-                  color: _currentIndex == 0 ? Colors.white : Colors.black,
+                  color: getIt<RouterCustom>().currentIndex == 0
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 onTap: () {
                   setState(() {
-                    _currentIndex = 0;
+                    getIt<RouterCustom>().setIndex('home');
                   });
                   // Update the state of the app
                   // Then close the drawer
@@ -100,23 +111,27 @@ class _HomeState extends State<Home> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                      color:  _currentIndex == 1
-                          ?StandardTheme.homeColor :  Color(0xFFcad8f5),
-                      borderRadius: BorderRadius.all(Radius.circular(15)))
-                  ,
+                  color: getIt<RouterCustom>().currentIndex == 1
+                      ? StandardTheme.homeColor
+                      : StandardTheme.badge,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
               child: ListTile(
                 leading: Icon(
                   Icons.calendar_month,
-                  color: _currentIndex == 1 ? Colors.white : Colors.black,
+                  color: getIt<RouterCustom>().currentIndex == 1
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 title: Text(
                   'Eventos',
                   style: TextStyle(
-                      color: _currentIndex == 1 ? Colors.white : Colors.black),
+                      color: getIt<RouterCustom>().currentIndex == 1
+                          ? Colors.white
+                          : Colors.black),
                 ),
                 onTap: () {
                   setState(() {
-                    _currentIndex = 1;
+                    getIt<RouterCustom>().setIndex('eventos');
                   });
                   // Update the state of the app
                   // Then close the drawer
@@ -127,23 +142,27 @@ class _HomeState extends State<Home> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                      color:_currentIndex == 2
-                          ?  StandardTheme.homeColor: Color(0xFFcad8f5),
-                      borderRadius: BorderRadius.all(Radius.circular(15)))
-                  ,
+                  color: getIt<RouterCustom>().currentIndex == 2
+                      ? StandardTheme.homeColor
+                      : StandardTheme.badge,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
               child: ListTile(
                 leading: Icon(
                   Icons.music_note,
-                  color: _currentIndex == 2 ? Colors.white : Colors.black,
+                  color: getIt<RouterCustom>().currentIndex == 2
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 title: Text(
                   'Músicas',
                   style: TextStyle(
-                      color: _currentIndex == 2 ? Colors.white : Colors.black),
+                      color: getIt<RouterCustom>().currentIndex == 2
+                          ? Colors.white
+                          : Colors.black),
                 ),
                 onTap: () {
                   setState(() {
-                    _currentIndex = 2;
+                    getIt<RouterCustom>().setIndex('third');
                   });
                   // Update the state of the app
                   // Then close the drawer
@@ -153,41 +172,70 @@ class _HomeState extends State<Home> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration:  BoxDecoration(
-                      color: _currentIndex == 3
-                          ?StandardTheme.homeColor:Color(0xFFcad8f5),
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
-
+              decoration: BoxDecoration(
+                  color: getIt<RouterCustom>().currentIndex == 3
+                      ? StandardTheme.homeColor
+                      : StandardTheme.badge,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
               child: ListTile(
                 leading: Icon(
                   Icons.group,
-                  color: _currentIndex == 3 ? Colors.white : Colors.black,
+                  color: getIt<RouterCustom>().currentIndex == 3
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 title: Text(
                   'Equipe',
                   style: TextStyle(
-                      color: _currentIndex == 3 ? Colors.white : Colors.black),
+                      color: getIt<RouterCustom>().currentIndex == 3
+                          ? Colors.white
+                          : Colors.black),
                 ),
                 onTap: () {
                   setState(() {
-                    _currentIndex = 3;
+                    getIt<RouterCustom>().setIndex('equipe');
                   });
                   // Update the state of the app
                   // Then close the drawer
                   Navigator.pop(context);
+                },
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+              decoration: BoxDecoration(
+                  color: StandardTheme.badge,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: ListTile(
+                leading: Icon(
+                  Icons.group,
+                  color: Colors.black,
+                ),
+                title: Text(
+                  'Trocar equipe',
+                  style: TextStyle(color: Colors.black),
+                ),
+                onTap: () {
+                  // Update the state of the app
+                  // Then close the drawer
+                  Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                          child: EscolhaEquipe(),
+                          type: PageTransitionType.fade));
                 },
               ),
             ),
             //         Container(
             //           margin: EdgeInsets.symmetric(horizontal: 14,vertical: 7),
-            //           decoration: _currentIndex == 0 ? BoxDecoration(color: StandardTheme.homeColor,borderRadius: BorderRadius.all(Radius.circular(15))):BoxDecoration(),
+            //           decoration: getIt<RouterCustom>().currentIndex == 0 ? BoxDecoration(color: StandardTheme.homeColor,borderRadius: BorderRadius.all(Radius.circular(15))):BoxDecoration(),
             //
             //           child: ListTile(
             // leading: Icon(Icons.person),
             //             title: const Text('Meu perfil'),
             //             onTap: () {
             //               setState(() {
-            //                 _currentIndex = 2;
+            //                 getIt<RouterCustom>().currentIndex = 2;
             //               });
             //               // Update the state of the app
             //               // Then close the drawer
@@ -207,15 +255,6 @@ class FirstScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text('Tela 1'),
-    );
-  }
-}
-
-class SecondScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Tela 2'),
     );
   }
 }

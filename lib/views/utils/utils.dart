@@ -3,16 +3,66 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:new_pib_app/views/eventos/criarEvento.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../Equipe/details.dart';
+import '../eventos/evento.dart';
+import '../eventos/eventos.dart';
+import '../home/home.dart';
+
+
+class RouterCustom {
+
+  late String currentIndex;
+  late int idEventoSelecionado;
+  late  Function notifyParent;
+
+  void setIndex(String index) {
+    currentIndex = index;
+  }
+
+
+
+  void setEvento(int idEventoo) {
+    idEventoSelecionado = idEventoo;
+    screens['evento'] = EventoIndex(
+      idEvento: idEventoSelecionado,
+    );
+    currentIndex = 'evento';
+  }
+
+  void setRefresh(notify){
+    notifyParent = notify;
+  }
+
+  RouterCustom(String index,) {
+    currentIndex = index;
+    idEventoSelecionado = 0;
+    notifyParent = (){};
+    screens['evento'] = EventoIndex(
+      idEvento: idEventoSelecionado,
+    );
+  }
+
+  Map<String, Widget> screens = {
+    'home': FirstScreen(),
+    'eventos': EventosList(),
+    'third': ThirdScreen(),
+    'equipe': EquipeIndex(),
+    'createEvento': EventoCreate()
+  };
+}
 
 class StandardTheme {
   static Color homeColor = const Color(0xFF0f3870);
   static Color disabledPrimary = const Color(0xFFd8e3f5);
   static Color cardColor = const Color(0xFFfed428);
+
   // static Color cardColor = const Color(0xFFFFD54F);
-  static Color badge = const Color(0xFF13171c);
+  static Color badge = const Color(0xFFcad8f5);
   static Color cardColor2 = const Color(0xFFfff9fc);
+
   // static Color cardColor2 = const Color(0xFF262425);
   static Color fontColor = const Color.fromRGBO(0, 0, 0, 10);
 }
@@ -24,6 +74,32 @@ class ColorsDarkTheme {
   static Color fontColor = const Color.fromRGBO(255, 255, 255, 10);
 }
 
+class Traducao {
+  static List<String> meses = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro'
+  ];
+
+  static List<String> diasSemana = [
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado',
+    'Domingo'
+  ];
+}
 
 class NotFoundCifras extends StatelessWidget {
   const NotFoundCifras({
@@ -55,7 +131,9 @@ class NotFound extends StatelessWidget {
     super.key,
     required this.texto,
   });
+
   String texto;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -81,12 +159,12 @@ void showDialogue(BuildContext context) {
     useSafeArea: true,
     context: context,
     builder: (BuildContext context) => Center(
-      // /RefreshProgressIndicator()
-      // child: CircularProgressIndicator(color: Color(0xFFFFD54F),semanticsLabel: 'Carregando',semanticsValue: 'Carregando',)),
+        // /RefreshProgressIndicator()
+        // child: CircularProgressIndicator(color: Color(0xFFFFD54F),semanticsLabel: 'Carregando',semanticsValue: 'Carregando',)),
         child: RefreshProgressIndicator(
-          color: const Color(0xFFFFD54F),
-          backgroundColor: StandardTheme.cardColor2,
-        )),
+      color: const Color(0xFFFFD54F),
+      backgroundColor: StandardTheme.cardColor2,
+    )),
   );
 }
 
@@ -141,10 +219,10 @@ class CardConteudo extends StatelessWidget {
 class CardAcoes extends StatelessWidget {
   const CardAcoes(
       {super.key,
-        required this.title,
-        required this.icone,
-        this.fontColor,
-        required this.iconColor});
+      required this.title,
+      required this.icone,
+      this.fontColor,
+      required this.iconColor});
 
   final String title;
   final icone;
@@ -165,10 +243,10 @@ class CardAcoes extends StatelessWidget {
           children: [
             icone != null
                 ? Icon(
-              icone,
-              color: iconColor,
-              size: 40,
-            )
+                    icone,
+                    color: iconColor,
+                    size: 40,
+                  )
                 : Container(),
             Text(
               title,
@@ -177,7 +255,7 @@ class CardAcoes extends StatelessWidget {
                   color: fontColor != null ? fontColor : Colors.white,
                   fontSize: icone != null ? 16 : 16,
                   fontWeight:
-                  icone != null ? FontWeight.normal : FontWeight.bold),
+                      icone != null ? FontWeight.normal : FontWeight.bold),
             )
           ],
         ),
@@ -189,19 +267,19 @@ class CardAcoes extends StatelessWidget {
 class Input extends StatelessWidget {
   Input(
       {super.key,
-        this.controller,
-        required this.nome,
-        required this.icon,
-        required this.password,
-        this.height,
-        this.constLines,
-        this.dica,
-        this.dark,
-        this.action,
-        required this.validate,
-        required this.onChange,
-        this.enabled,
-        required this.onTap});
+      this.controller,
+      required this.nome,
+      required this.icon,
+      required this.password,
+      this.height,
+      this.constLines,
+      this.dica,
+      this.dark,
+      this.action,
+      required this.validate,
+      required this.onChange,
+      this.enabled,
+      required this.onTap});
 
   final TextEditingController? controller;
   final nome;
@@ -219,11 +297,12 @@ class Input extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color colorText= dark != null && dark! == true ? Colors.black :Colors.white;
+    Color colorText =
+        dark != null && dark! == true ? Colors.black : Colors.white;
     return Container(
       child: TextFormField(
         textInputAction: action ?? TextInputAction.done,
-        style:  TextStyle(color:Colors.black),
+        style: TextStyle(color: Colors.black),
         onChanged: (value) async {
           onChange!(value) ?? print('ruim');
         },
@@ -234,9 +313,8 @@ class Input extends StatelessWidget {
         cursorColor: Colors.black,
         maxLines: constLines ?? 1,
         decoration: InputDecoration(
-
           contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-          helperStyle:  TextStyle(color: colorText),
+          helperStyle: TextStyle(color: colorText),
           hintStyle: TextStyle(height: height ?? 1, color: colorText),
           alignLabelWithHint: true,
           errorStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -254,18 +332,20 @@ class Input extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: Colors.red)),
           labelText: nome,
-          floatingLabelStyle:  TextStyle(
+          floatingLabelStyle: TextStyle(
             color: Colors.black,
             fontSize: 18,
           ),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          labelStyle:  TextStyle(color: Colors.black),
+          labelStyle: TextStyle(color: Colors.black),
           focusedBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(
                 style: BorderStyle.solid,
                 width: 3,
-                color: dark != null && dark! == true ? Colors.white: StandardTheme.homeColor,
+                color: dark != null && dark! == true
+                    ? Colors.white
+                    : StandardTheme.homeColor,
               )),
           filled: true,
           fillColor: Color(0xFFfff9fc),
@@ -281,22 +361,23 @@ class Input extends StatelessWidget {
 class InputDate extends StatelessWidget {
   InputDate(
       {super.key,
-        required this.controller,
-        required this.nome,
-        required this.icon,
-        required this.password,
-        required this.onTap});
+      required this.controller,
+      required this.nome,
+      required this.icon,
+      required this.password,
+       this.dark,
+      required this.onTap});
 
   final TextEditingController controller;
   final nome;
   final icon;
   final Function onTap; // nullable and optional
   final password;
+  bool? dark;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(5),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
@@ -304,41 +385,50 @@ class InputDate extends StatelessWidget {
         onTap: () {
           onTap();
         },
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.black),
         obscureText: password,
         controller: controller,
         showCursor: false,
         readOnly: true,
-        decoration: InputDecoration(
+        decoration:  InputDecoration(
           contentPadding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-          hintText: nome,
-          helperText: nome,
-          helperStyle: const TextStyle(color: Colors.white),
-          hintStyle: const TextStyle(color: Colors.white),
+          
+          
+          alignLabelWithHint: true,
+          errorStyle: const TextStyle(fontWeight: FontWeight.bold),
+          focusedErrorBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: Colors.red)),
+          floatingLabelAlignment: FloatingLabelAlignment.start,
           enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            borderSide: BorderSide(
-              color: Colors.black,
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
-          prefixIcon: Icon(
-            icon,
-            color: const Color.fromRGBO(248, 213, 0, 1),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
-          focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+          errorBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: Colors.red)),
+          labelText: nome,
+          floatingLabelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          labelStyle: TextStyle(color: Colors.black),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(
-                color: Colors.black,
+                style: BorderStyle.solid,
+                width: 3,
+                color: dark != null && dark! == true
+                    ? Colors.white
+                    : StandardTheme.homeColor,
               )),
           filled: true,
-          fillColor: StandardTheme.cardColor2,
-          hoverColor: Colors.black,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
+          fillColor: Color(0xFFfff9fc),
         ),
-      ),
+         ),
     );
   }
 }
@@ -346,12 +436,12 @@ class InputDate extends StatelessWidget {
 class ElevatedButtonCustom extends StatelessWidget {
   const ElevatedButtonCustom(
       {super.key,
-        required this.onPressed,
-        required this.name,
-        this.colorText,
-        this.full,
-        this.icon,
-        required this.color});
+      required this.onPressed,
+      required this.name,
+      this.colorText,
+      this.full,
+      this.icon,
+      required this.color});
 
   final Function onPressed;
   final bool? full;
@@ -365,8 +455,7 @@ class ElevatedButtonCustom extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         // ignore: prefer_if_null_operators
-        backgroundColor:
-        color != null ? color : StandardTheme.cardColor,
+        backgroundColor: color != null ? color : StandardTheme.cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
@@ -382,9 +471,9 @@ class ElevatedButtonCustom extends StatelessWidget {
           children: [
             icon != null
                 ? Icon(
-              icon,
-              color: colorText ?? Colors.black,
-            )
+                    icon,
+                    color: colorText ?? Colors.black,
+                  )
                 : Container(),
             Text(
               name,
@@ -406,7 +495,7 @@ class OfflineBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      child: const Row(
+      child:  Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -431,7 +520,7 @@ class OfflineBar extends StatelessWidget {
 }
 
 class DecorationVariables {
-  static InputDecoration inputPesquisaDecoration =  InputDecoration(
+  static InputDecoration inputPesquisaDecoration = InputDecoration(
     contentPadding: const EdgeInsets.all(20),
     filled: true,
     fillColor: StandardTheme.badge,
@@ -494,7 +583,6 @@ Future<DateTime?> showDateTimePicker({
 
   if (selectedDate == null) return null;
 
-  if (!context.mounted) return selectedDate;
 
   final TimeOfDay? selectedTime = await showTimePicker(
     context: context,
@@ -504,12 +592,12 @@ Future<DateTime?> showDateTimePicker({
   return selectedTime == null
       ? selectedDate
       : DateTime(
-    selectedDate.year,
-    selectedDate.month,
-    selectedDate.day,
-    selectedTime.hour,
-    selectedTime.minute,
-  );
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
 }
 
 class CustomTag extends StatefulWidget {
@@ -587,7 +675,6 @@ class _BottomBarState extends State<BottomBar> {
             InkWell(
               onTap: () async {
                 if (widget.selecionado != 'home') {
-
                   showDialogue(context);
 
                   // ignore: use_build_context_synchronously
@@ -612,11 +699,12 @@ class _BottomBarState extends State<BottomBar> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: widget.selecionado == 'home' ? StandardTheme.badge : Colors.transparent,
+                    color: widget.selecionado == 'home'
+                        ? StandardTheme.badge
+                        : Colors.transparent,
                     borderRadius: const BorderRadius.all(Radius.circular(20))),
                 padding: const EdgeInsets.all(8),
                 child: Row(
-
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -625,7 +713,7 @@ class _BottomBarState extends State<BottomBar> {
                               ? Colors.amber[400]
                               : Colors.white),
                     ),
-                    Text(  widget.selecionado == 'home' ?'Home': '',
+                    Text(widget.selecionado == 'home' ? 'Home' : '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'home'
@@ -638,7 +726,6 @@ class _BottomBarState extends State<BottomBar> {
             InkWell(
               onTap: () async {
                 if (widget.selecionado != 'event') {
-
                   showDialogue(context);
                   // var eventos = await EventoController.getEvents(
                   //     getIt<UserCustom>().ministerioSelecionado);
@@ -663,7 +750,9 @@ class _BottomBarState extends State<BottomBar> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: widget.selecionado == 'event' ? StandardTheme.badge : Colors.transparent,
+                    color: widget.selecionado == 'event'
+                        ? StandardTheme.badge
+                        : Colors.transparent,
                     borderRadius: const BorderRadius.all(Radius.circular(20))),
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -675,7 +764,7 @@ class _BottomBarState extends State<BottomBar> {
                               ? Colors.amber[400]
                               : Colors.white),
                     ),
-                    Text( widget.selecionado == 'event' ? 'Eventos': '',
+                    Text(widget.selecionado == 'event' ? 'Eventos' : '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'event'
@@ -688,7 +777,6 @@ class _BottomBarState extends State<BottomBar> {
             InkWell(
               onTap: () async {
                 if (widget.selecionado != 'music') {
-
                   showDialogue(context);
                   // // ignore: use_build_context_synchronously
                   // await Navigator.pushAndRemoveUntil(
@@ -708,7 +796,9 @@ class _BottomBarState extends State<BottomBar> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: widget.selecionado == 'music' ? StandardTheme.badge : Colors.transparent,
+                    color: widget.selecionado == 'music'
+                        ? StandardTheme.badge
+                        : Colors.transparent,
                     borderRadius: const BorderRadius.all(Radius.circular(20))),
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -720,7 +810,7 @@ class _BottomBarState extends State<BottomBar> {
                               ? Colors.amber[400]
                               : Colors.white),
                     ),
-                    Text( widget.selecionado == 'music'  ? 'Músicas' : '',
+                    Text(widget.selecionado == 'music' ? 'Músicas' : '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'music'
@@ -733,7 +823,6 @@ class _BottomBarState extends State<BottomBar> {
             InkWell(
               onTap: () async {
                 if (widget.selecionado != 'integrante') {
-
                   showDialogue(context);
                   // Ministerio? ministerio =
                   // await MinisterioController.getMinisterioById(
@@ -757,7 +846,9 @@ class _BottomBarState extends State<BottomBar> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: widget.selecionado == 'integrante' ? StandardTheme.badge : Colors.transparent,
+                    color: widget.selecionado == 'integrante'
+                        ? StandardTheme.badge
+                        : Colors.transparent,
                     borderRadius: const BorderRadius.all(Radius.circular(20))),
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -769,7 +860,7 @@ class _BottomBarState extends State<BottomBar> {
                               ? Colors.amber[400]
                               : Colors.white),
                     ),
-                    Text(widget.selecionado == 'integrante' ? 'Ministério': '',
+                    Text(widget.selecionado == 'integrante' ? 'Ministério' : '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             color: widget.selecionado == 'integrante'
@@ -782,7 +873,6 @@ class _BottomBarState extends State<BottomBar> {
             InkWell(
               onTap: () async {
                 if (widget.selecionado != 'profile') {
-
                   showDialogue(context);
                   // var user = await FirebaseAuth.instance.currentUser;
                   // await Navigator.pushAndRemoveUntil(
@@ -804,7 +894,9 @@ class _BottomBarState extends State<BottomBar> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: widget.selecionado == 'profile' ? StandardTheme.badge : Colors.transparent,
+                    color: widget.selecionado == 'profile'
+                        ? StandardTheme.badge
+                        : Colors.transparent,
                     borderRadius: const BorderRadius.all(Radius.circular(20))),
                 padding: const EdgeInsets.all(8),
                 child: Row(
@@ -816,7 +908,7 @@ class _BottomBarState extends State<BottomBar> {
                               ? Colors.amber[400]
                               : Colors.white),
                     ),
-                    Text(widget.selecionado == 'profile' ? 'Perfil': '',
+                    Text(widget.selecionado == 'profile' ? 'Perfil' : '',
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * 0.035,
                             overflow: TextOverflow.fade,
@@ -848,7 +940,7 @@ class HeaderHomePage extends StatelessWidget {
       decoration: BoxDecoration(
         color: StandardTheme.cardColor,
         borderRadius: const BorderRadius.all(
-          // left: Radius.circular(30)
+            // left: Radius.circular(30)
             Radius.circular(20)),
       ),
       width: MediaQuery.of(context).size.width,
@@ -890,20 +982,24 @@ class HeaderHomePage extends StatelessWidget {
 }
 
 class HeaderStandard extends StatelessWidget {
-  const HeaderStandard({super.key, required this.title,this.margin});
+  const HeaderStandard({super.key, required this.title, this.margin});
 
   final String title;
   final EdgeInsets? margin;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.12,
-      margin: margin ?? EdgeInsets.only(
-          top: MediaQuery.of(context).size.height * 0.05, left: 10, right: 10),
+      margin: margin ??
+          EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.05,
+              left: 10,
+              right: 10),
       decoration: BoxDecoration(
         color: StandardTheme.cardColor,
         borderRadius: const BorderRadius.all(
-          // left: Radius.circular(30)
+            // left: Radius.circular(30)
             Radius.circular(20)),
       ),
       width: MediaQuery.of(context).size.width,
@@ -937,9 +1033,9 @@ class HeaderStandard extends StatelessWidget {
 class DropdownCheckbox extends StatelessWidget {
   DropdownCheckbox(
       {super.key,
-        required this.objetosEncontrados,
-        required this.objetosSelecionados,
-        required this.defaultValue});
+      required this.objetosEncontrados,
+      required this.objetosSelecionados,
+      required this.defaultValue});
 
   List<DropdownMenuItem<Object>> objetosEncontrados;
   var defaultValue;
@@ -955,7 +1051,6 @@ class DropdownCheckbox extends StatelessWidget {
       ),
       child: Container(
         child: DropdownButton(
-          padding: const EdgeInsets.all(5),
           dropdownColor: StandardTheme.cardColor2,
           value: defaultValue,
           icon: const Padding(
@@ -979,16 +1074,18 @@ class DropdownCheckbox extends StatelessWidget {
 class WideCard extends StatelessWidget {
   WideCard(
       {super.key,
-        required this.title,
-        required this.description,
-        this.icon,
-        this.extraDetails,
-        this.actions});
+      required this.title,
+      required this.description,
+      this.icon,
+      this.extraDetails,
+      this.actions});
+
   List<Widget>? actions;
   List<Widget>? extraDetails;
   IconData? icon;
   String title;
   String description;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1016,9 +1113,9 @@ class WideCard extends StatelessWidget {
                 ),
                 description != ''
                     ? Text(
-                  description,
-                  style: const TextStyle(color: Colors.white),
-                )
+                        description,
+                        style: const TextStyle(color: Colors.white),
+                      )
                     : Container(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1171,90 +1268,6 @@ class _ExternalBottomBarState extends State<ExternalBottomBar> {
   }
 }
 
-// List<Enum> status = [ConnectivityResult.mobile, ConnectivityResult.wifi];
-
-// class Template extends StatefulWidget {
-//   Template(
-//       {super.key,
-//         required this.connectivity,
-//         required this.selecionado,
-//         required this.widgets,
-//         this.actionButton,
-//         required this.bottomBarActivated,
-//         this.title});
-//   final List<Widget> widgets;
-//   final String? title;
-//   bool bottomBarActivated = false;
-//   final Connectivity connectivity;
-//   final String selecionado;
-//   final Widget? actionButton;
-//
-//   @override
-//   State<Template> createState() => _TemplateState();
-// }
-//
-// class _TemplateState extends State<Template> {
-//   bool offline = false;
-//   @override
-//   void initState() {
-//     setConnect();
-//     super.initState();
-//   }
-//
-//   setConnect() async {
-//     var a = await widget.connectivity.checkConnectivity();
-//     setState(() {
-//       offline = !status.contains(a);
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<ConnectivityResult>(
-//       stream: widget.connectivity.onConnectivityChanged,
-//       builder: (context, snapshot) {
-//         if (snapshot.data != null) {
-//           offline = !status.contains(snapshot.data);
-//         }
-//
-//         return Scaffold(
-//           floatingActionButton: widget.actionButton,
-//           backgroundColor: StandardTheme.homeColor,
-//           bottomNavigationBar: widget.bottomBarActivated
-//               ? BottomBar(
-//             selecionado: widget.selecionado,
-//           )
-//               : null,
-//
-//           bottomSheet: AnimatedContainer(
-//             width: MediaQuery.of(context).size.width,
-//             decoration: BoxDecoration(
-//               color: offline ? Colors.redAccent[200] : Colors.transparent,
-//             ),
-//             height: offline ? 40.0 : 0,
-//             duration: const Duration(milliseconds: 0),
-//             curve: Curves.decelerate,
-//             child: const OfflineBar(),
-//           ),
-//           resizeToAvoidBottomInset: true,
-//           // backgroundColor:  Color.fromRGBO(248, 248, 248, 1),
-//           body: SingleChildScrollView(
-//             child: Column(
-//               children: [
-//                 widget.title != null
-//                     ? HeaderStandard(title: widget.title!)
-//                     : const HeaderHomePage(),
-//                 Column(
-//                   children: widget.widgets,
-//                 )
-//               ],
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }
 
 void messageToUser(
     BuildContext context, String message, Color color, IconData icon) {

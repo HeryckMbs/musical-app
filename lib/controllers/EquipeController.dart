@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'package:new_pib_app/models/Integrante.dart';
 import 'package:new_pib_app/models/token.dart';
 
 import '../main.dart';
@@ -56,8 +57,10 @@ class EquipeController{
             'Content-type': 'application/json',
             'Accept': 'application/json',
           });
+      print(fullUrl);
 
       data = jsonDecode(response.body);
+      print(data);
       if(data['success'] != null && data['success'] == true){
             for(var equipe in data['data'] ){
               equipes.add(Equipe.fromJson(equipe));
@@ -119,6 +122,34 @@ class EquipeController{
       print(e);
     }
     return equipe;
+  }
+
+
+  static Future<List<Integrante?>> getIntegrantesEquipeAtual() async {
+    String? accessToken = getIt<Token>().accessToken;
+    int codeEquipe = getIt<Sessao>().idEquipe_selecionada;
+    var fullUrl = Uri.http(
+      dotenv.env['host']!,
+      '/api/equipeIntegrantes/$codeEquipe',
+    );
+    late Response response;
+    late Map<String, dynamic> data;
+    List<Integrante?> integrantes = [];
+    try {
+      response = await http.get(fullUrl, headers: {
+        'Authorization': "Bearer " + accessToken!,
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+      });
+
+      data = jsonDecode(response.body);
+      for (var item in data['data']) {
+        integrantes.add(Integrante.fromJson(item));
+      }
+    } on Exception catch (e) {
+      print(e);
+    }
+    return integrantes;
   }
 
 

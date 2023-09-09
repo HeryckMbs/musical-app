@@ -30,6 +30,12 @@ class _EscolhaEquipeState extends State<EscolhaEquipe> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   bool enterCode = false;
   TextEditingController code = new TextEditingController();
 
@@ -75,7 +81,7 @@ class _EscolhaEquipeState extends State<EscolhaEquipe> {
                   decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: const Row(
+                  child:  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(
@@ -115,7 +121,7 @@ class _EscolhaEquipeState extends State<EscolhaEquipe> {
                   decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: const Row(
+                  child:  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(
@@ -144,7 +150,7 @@ class _EscolhaEquipeState extends State<EscolhaEquipe> {
                   decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  child: const Row(
+                  child:  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(

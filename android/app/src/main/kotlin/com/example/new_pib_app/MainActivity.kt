@@ -1,4 +1,4 @@
-package com.example.new_pib_app
+package musica.evangelica.nacional
 
 import io.flutter.embedding.android.FlutterActivity
 

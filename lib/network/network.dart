@@ -19,6 +19,8 @@ class Network {
       dotenv.env['host']!,
       '/oauth/token',
     );
+    print(username);
+    print(password);
     var response = await http.post(fullUrl,
         body: jsonEncode({
           "grant_type": "password",
@@ -82,6 +84,8 @@ class Network {
   Map<String,String> setHeaders() => {
         'Content-type': 'application/json',
         'Accept': 'application/json',
+              "Access-Control-Allow-Origin": "*",
+
         'Authorization': 'Bearer $token'
       };
 }

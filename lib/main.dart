@@ -14,7 +14,7 @@ import 'package:new_pib_app/views/utils/utils.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'views/utils/utils.dart';
 import 'models/sessao.dart';
 import 'views/home/home.dart';
 
@@ -31,7 +31,6 @@ void main() async {
     String refresh_token = localStorage.getString('refresh_token')!;
     String valid_until = localStorage.getString('valid_until')!;
 
-
     if(access_token != null &&
     refresh_token != null &&
     valid_until != null){
@@ -39,6 +38,7 @@ void main() async {
       logged = true;
     }
   }
+  getIt.registerSingleton(RouterCustom( 'home'));
 
   if(!getIt.isRegistered<Sessao>()){
     getIt.registerSingleton(Sessao(idEquipe_selecionada: 0));
@@ -52,8 +52,11 @@ class MyApp extends StatelessWidget {
   MyApp({super.key,required this.logged});
   bool logged;
   // This widget is the root of your application.
+
+  
   @override
   Widget build(BuildContext context) {
+   
     return MaterialApp(
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
@@ -84,6 +87,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+@override
+  void initState() {
+    
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
